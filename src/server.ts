@@ -26,12 +26,12 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-console.log("baseurl", BASE_URL)
-
 app.use(
 	[`${BASE_URL}/docs`, `${BASE_URL}/swagger`],
 	swagger.serve,
-	swagger.setup(swaggerConfig)
+	swagger.setup(swaggerConfig, undefined, {
+		basePath: BASE_URL
+	})
 )
 
 app.use(BASE_URL, routes)

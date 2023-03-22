@@ -87,6 +87,20 @@
 			},
 			"GetAllResponse": {
 				"$ref": "#/components/schemas/BaseResponse_User-Array_"
+			},
+			"BaseResponse_User_": {
+				"properties": {
+					"content": {
+						"$ref": "#/components/schemas/User"
+					}
+				},
+				"required": [
+					"content"
+				],
+				"type": "object"
+			},
+			"GetResponse": {
+				"$ref": "#/components/schemas/BaseResponse_User_"
 			}
 		},
 		"securitySchemes": {}
@@ -119,11 +133,67 @@
 				"security": [],
 				"parameters": []
 			}
+		},
+		"/users/{entityId}": {
+			"get": {
+				"operationId": "GetById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/GetResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "entityId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/users/users/by/email/{email}": {
+			"get": {
+				"operationId": "GetByEmail",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/GetResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "email",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
 		}
 	},
 	"servers": [
 		{
-			"url": "/"
+			"url": "/api/v1"
 		}
 	]
 }

@@ -1,5 +1,6 @@
 import { User } from '@prisma/client';
-import { Body, Get, Path, Post, Query, Route } from "tsoa";
+import { Body, Get, Path, Post, Route } from "tsoa";
+import { ServiceError } from '../../exceptions';
 import { UserRepository } from '../../repositories';
 import { BaseResponse } from '../types';
 
@@ -12,43 +13,31 @@ export type SearchRequest = { email: string }
 export default class UserController {
 	@Get("/")
 	public async getAll(): Promise<GetAllResponse> {
-		try {
-			const result = await UserRepository.getAll()
-			return {
-				content: result
-			}
-		} catch (error) {
-			throw error
+		const result = await UserRepository.getAll()
+		return {
+			content: result
 		}
 	}
 
 	@Get("/{entityId}")
 	public async getById(@Path() entityId: string): Promise<GetResponse> {
-		try {
-			const result = await UserRepository.getById(entityId)
+		const result = await UserRepository.getById(entityId)
 
-			if (!result) throw new Error('User not found')
+		if (!result) throw ServiceError.createNotFoundError('User not found')
 
-			return {
-				content: result
-			}
-		} catch (error) {
-			throw error
+		return {
+			content: result
 		}
 	}
 
 	@Post("/search")
 	public async getByEmail(@Body() { email }: SearchRequest): Promise<GetResponse> {
-		try {
-			const result = await UserRepository.getByEmail(email)
+		const result = await UserRepository.getByEmail(email)
 
-			if (!result) throw new Error('User not found')
-
-			return {
-				content: result
-			}
-		} catch (error) {
-			throw error
+		if (!result) throw ServiceError.createNotFoundError('User not found')
+		
+		return {
+			content: result
 		}
 	}
 }

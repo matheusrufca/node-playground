@@ -11,7 +11,7 @@ router.get('/', async (req, res, next) => {
 		const response = await controller.getAll()
 		res.json(response)
 	} catch (error) {
-		console.error(error)
+		next(error)
 	}
 })
 
@@ -22,7 +22,7 @@ router.get('/:entityId', async (req, res, next) => {
 		const response = await controller.getById(entityId)
 		res.json(response)
 	} catch (error) {
-		console.error(error)
+		next(error)
 	}
 })
 
@@ -33,8 +33,7 @@ router.post('/search', async (req: IRequest<SearchRequest>, res, next) => {
 		const response = await controller.getByEmail({ email })
 		res.json(response)
 	} catch (error) {
-		console.error(error)
-		res.send(error)
+		next(error)
 	}
 })
 

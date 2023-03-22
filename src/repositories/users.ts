@@ -1,4 +1,6 @@
 import { Prisma, PrismaClient, User } from '@prisma/client'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
+import { handlePrismaError } from '../config/prisma-error-handler'
 import { getDatabaseConnection } from '../database'
 import { now } from '../utils/date'
 
@@ -37,16 +39,16 @@ export const get = async (options: Prisma.UserFindUniqueArgs): Promise<User | nu
 	let database: PrismaClient | undefined
 	try {
 		database = await getDatabaseConnection()
-		console.debug('options', options)
 		const data = await database.user.findUnique(options)
 		return data
 	} catch (error) {
-		throw error
+		throw handlePrismaError(error)
 	}
 	finally {
 		await database?.$disconnect()
 	}
 }
+
 export const getByEmail = async (email: string, options?: Prisma.UserFindUniqueArgs): Promise<User | null> => {
 	return get({
 		...options,

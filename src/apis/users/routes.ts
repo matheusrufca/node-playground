@@ -1,7 +1,9 @@
 import express, { Router } from 'express'
-import UserController from './controller'
+import { IRequest } from '../types'
+import UserController, { SearchRequest } from './controller'
 
-const router: Router = express.Router()
+const router: Router = express.Router({ strict: true })
+
 
 router.get('/', async (req, res, next) => {
 	try {
@@ -24,16 +26,20 @@ router.get('/:entityId', async (req, res, next) => {
 	}
 })
 
-router.get('/by/email/:email', async (req, res, next) => {
+router.post('/search', async (req: IRequest<SearchRequest>, res, next) => {
 	try {
-		const { email } = req.params
+		const { email } = req.body
 		const controller = new UserController()
-		const response = await controller.getByEmail(email)
+		const response = await controller.getByEmail({ email })
 		res.json(response)
 	} catch (error) {
 		console.error(error)
+		res.send(error)
 	}
 })
+
+
+
 
 
 export default router

@@ -33,6 +33,20 @@ export const getAll = async (options?: Prisma.UserFindManyArgs): Promise<User[]>
 	}
 }
 
+export const get = async (options: Prisma.UserFindUniqueArgs): Promise<User | null> => {
+	let database: PrismaClient | undefined
+	try {
+		database = await getDatabaseConnection()
+		console.debug('options', options)
+		const data = await database.user.findUnique(options)
+		return data
+	} catch (error) {
+		throw error
+	}
+	finally {
+		await database?.$disconnect()
+	}
+}
 export const getByEmail = async (email: string, options?: Prisma.UserFindUniqueArgs): Promise<User | null> => {
 	return get({
 		...options,
@@ -51,22 +65,6 @@ export const getById = async (id: string, options?: Prisma.UserFindUniqueArgs): 
 			...options?.where
 		},
 	})
-}
-
-export const get = async (options: Prisma.UserFindUniqueArgs): Promise<User | null> => {
-	let database: PrismaClient | undefined
-	try {
-		database = await getDatabaseConnection()
-		const data = await database.user.findUnique({
-			...options,
-		})
-		return data
-	} catch (error) {
-		throw error
-	}
-	finally {
-		await database?.$disconnect()
-	}
 }
 
 export const update = async (data: Prisma.UserUpdateArgs) => {

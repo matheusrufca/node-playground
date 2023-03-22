@@ -1,10 +1,12 @@
 import { User } from '@prisma/client';
-import { Get, Path, Query, Route } from "tsoa";
+import { Body, Get, Path, Post, Query, Route } from "tsoa";
 import { UserRepository } from '../../repositories';
 import { BaseResponse } from '../types';
 
 type GetAllResponse = BaseResponse<User[]>
 type GetResponse = BaseResponse<User>
+
+export type SearchRequest = { email: string }
 
 @Route("users")
 export default class UserController {
@@ -20,7 +22,7 @@ export default class UserController {
 		}
 	}
 
-	@Get("{entityId}")
+	@Get("/{entityId}")
 	public async getById(@Path() entityId: string): Promise<GetResponse> {
 		try {
 			const result = await UserRepository.getById(entityId)
@@ -35,8 +37,8 @@ export default class UserController {
 		}
 	}
 
-	@Get("/users/by/email/{email}")
-	public async getByEmail(@Query() email: string): Promise<GetResponse> {
+	@Post("/search")
+	public async getByEmail(@Body() { email }: SearchRequest): Promise<GetResponse> {
 		try {
 			const result = await UserRepository.getByEmail(email)
 

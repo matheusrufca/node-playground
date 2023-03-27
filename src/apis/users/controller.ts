@@ -1,13 +1,14 @@
-import { User } from '@prisma/client';
-import { Body, Get, Path, Post, Route } from "tsoa";
+import { StatusCodes } from 'http-status-codes';
+import { Body, Get, Path, Post, Route, SuccessResponse } from "tsoa";
 import { ServiceError } from '../../exceptions';
 import { UserRepository } from '../../repositories';
-import { BaseResponse } from '../types';
+import {
+	CreateUserRequest,
+	GetAllResponse,
+	GetResponse,
+	SearchRequest,
+} from './models';
 
-type GetAllResponse = BaseResponse<User[]>
-type GetResponse = BaseResponse<User>
-
-export type SearchRequest = { email: string }
 
 @Route("users")
 export default class UserController {
@@ -30,12 +31,22 @@ export default class UserController {
 		}
 	}
 
+	@Post("/")
+	@SuccessResponse(StatusCodes.CREATED, "Created")
+	public async create(@Body() { email, name }: CreateUserRequest): Promise<void> {
+		await UserRepository.create({
+			email,
+			name
+		})
+	}
+
+
 	@Post("/search")
 	public async getByEmail(@Body() { email }: SearchRequest): Promise<GetResponse> {
 		const result = await UserRepository.getByEmail(email)
 
 		if (!result) throw ServiceError.createNotFoundError('User not found')
-		
+
 		return {
 			content: result
 		}

@@ -2,14 +2,13 @@ import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import express, { Application, NextFunction, Request, Response } from 'express'
 import createError from 'http-errors'
-import { StatusCodes } from 'http-status-codes'
 import path from 'path'
 import swagger from 'swagger-ui-express'
 
 import swaggerConfig from '../public/swagger.json'
 import routes from './apis/routes'
+import { apiErrorHandler } from './config/api-error-handler'
 import logger from './config/logger'
-import { apiErrorHandler } from './config/api-error-handler';
 
 const BASE_URL = [process.env.API_BASE_PATH, process.env.API_VERSION].join('/')
 const PORT = process.env.PORT || 8000

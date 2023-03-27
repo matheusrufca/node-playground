@@ -14,7 +14,7 @@ export const create = async (data: Prisma.UserCreateInput) => {
 			data,
 		})
 	} catch (error) {
-		throw error
+		throw handlePrismaError(error)
 	}
 	finally {
 		await database?.$disconnect()
@@ -28,7 +28,7 @@ export const getAll = async (options?: Prisma.UserFindManyArgs): Promise<User[]>
 		const data = await database.user.findMany(options)
 		return data
 	} catch (error) {
-		throw error
+		throw handlePrismaError(error)
 	}
 	finally {
 		await database?.$disconnect()
@@ -69,36 +69,45 @@ export const getById = async (id: string, options?: Prisma.UserFindUniqueArgs): 
 	})
 }
 
-export const update = async (data: Prisma.UserUpdateArgs) => {
+export const update = async (email: string, data: Prisma.UserUpdateArgs) => {
 	let database: PrismaClient | undefined
 	try {
 		database = await getDatabaseConnection()
 
 		data.data.updatedAt = now()
 
-		return await database.user.update(data)
+		return await database.user.update({
+			...data,
+			where: {
+				email,
+			}
+		})
 	} catch (error) {
-		throw error
+		throw handlePrismaError(error)
 	}
 	finally {
 		await database?.$disconnect()
 	}
 }
 
-export const upsert = async (data: Omit<Prisma.UserUpsertArgs, 'where'>) => {
+export const upsert = async (email: string, data: Omit<Prisma.UserUpsertArgs, 'where'>) => {
 	let database: PrismaClient | undefined
 	try {
 		database = await getDatabaseConnection()
-		data.update.updatedAt = now()
 
-		return await database.user.upsert({
+		const model: Prisma.UserUpsertArgs = {
 			...data,
+			update: {
+				...data.update,
+				updatedAt: now(),
+			},
 			where: {
-				email: data.create.email,
+				email,
 			}
-		})
+		}
+		return await database.user.upsert(model)
 	} catch (error) {
-		throw error
+		throw handlePrismaError(error)
 	}
 	finally {
 		await database?.$disconnect()
@@ -111,7 +120,7 @@ export const remove = async (data: Prisma.UserDeleteArgs) => {
 		database = await getDatabaseConnection()
 		return await database.user.delete(data)
 	} catch (error) {
-		throw error
+		throw handlePrismaError(error)
 	}
 	finally {
 		await database?.$disconnect()

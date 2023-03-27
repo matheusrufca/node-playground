@@ -6,8 +6,6 @@ import { BadRequestError, BaseError, NotFoundError } from '../exceptions'
 
 
 const toResponseError = (error: Error): ResponseError => {
-	console.debug('error', { name: error.name })
-
 	if (error instanceof BaseError) {
 		return {
 			code: error.name,

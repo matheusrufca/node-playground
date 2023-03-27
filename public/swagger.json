@@ -102,6 +102,21 @@
 			"GetResponse": {
 				"$ref": "#/components/schemas/BaseResponse_User_"
 			},
+			"CreateUserRequest": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"email"
+				],
+				"type": "object"
+			},
 			"SearchRequest": {
 				"properties": {
 					"email": {
@@ -143,6 +158,26 @@
 				},
 				"security": [],
 				"parameters": []
+			},
+			"post": {
+				"operationId": "Create",
+				"responses": {
+					"201": {
+						"description": "Created"
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateUserRequest"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/users/{entityId}": {

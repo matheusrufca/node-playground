@@ -1,8 +1,8 @@
-import express, { Router } from 'express'
+import express, { Router, Request } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { IRequest } from '../types'
 import UserController from './controller'
-import { CreateUserRequest, SearchRequest } from './models'
+import { CreateUserRequest, EditUserRequest, GetResponse, Params, SearchRequest, UpsertUserRequest } from './models'
 
 const router: Router = express.Router({ strict: true })
 
@@ -17,7 +17,7 @@ router.get('/', async (req, res, next) => {
 	}
 })
 
-router.get('/:entityId', async (req, res, next) => {
+router.get('/:entityId', async (req: Request<Params, GetResponse>, res, next) => {
 	try {
 		const { entityId } = req.params
 		const controller = new UserController()
@@ -28,7 +28,7 @@ router.get('/:entityId', async (req, res, next) => {
 	}
 })
 
-router.post('/', async (req:IRequest<CreateUserRequest>, res, next) => {
+router.post('/', async (req: Request<{}, void, CreateUserRequest>, res, next) => {
 	try {
 		const controller = new UserController()
 		const response = await controller.create(req.body)
@@ -39,7 +39,32 @@ router.post('/', async (req:IRequest<CreateUserRequest>, res, next) => {
 	}
 })
 
-router.post('/search', async (req: IRequest<SearchRequest>, res, next) => {
+router.patch('/:entityId', async (req: Request<Params, void, EditUserRequest>, res, next) => {
+	try {
+		const { entityId } = req.params
+		const controller = new UserController()
+		const response = await controller.editWithId(entityId, req.body)
+		res.status(StatusCodes.CREATED)
+		res.json(response)
+	} catch (error) {
+		next(error)
+	}
+})
+
+
+router.put('/:entityId', async (req: Request<Params, void, UpsertUserRequest>, res, next) => {
+	try {
+		const { entityId } = req.params
+		const controller = new UserController()
+		const response = await controller.upsert(entityId, req.body)
+		res.status(StatusCodes.CREATED)
+		res.json(response)
+	} catch (error) {
+		next(error)
+	}
+})
+
+router.post('/search', async (req: Request<{}, GetResponse, SearchRequest>, res, next) => {
 	try {
 		const { email } = req.body
 		const controller = new UserController()

@@ -117,6 +117,36 @@
 				],
 				"type": "object"
 			},
+			"EditUserRequest": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"email"
+				],
+				"type": "object"
+			},
+			"UpsertUserRequest": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"email"
+				],
+				"type": "object"
+			},
 			"SearchRequest": {
 				"properties": {
 					"email": {
@@ -206,6 +236,64 @@
 						}
 					}
 				]
+			},
+			"patch": {
+				"operationId": "EditWithId",
+				"responses": {
+					"204": {
+						"description": "No Content"
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "entityId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/EditUserRequest"
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"operationId": "Upsert",
+				"responses": {
+					"204": {
+						"description": "No Content"
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "entityId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpsertUserRequest"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/users/search": {

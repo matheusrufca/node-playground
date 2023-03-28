@@ -69,18 +69,19 @@ export const getById = async (id: string, options?: Prisma.UserFindUniqueArgs): 
 	})
 }
 
-export const update = async (email: string, data: Prisma.UserUpdateArgs) => {
+
+export const update = async (data: Prisma.UserUpdateArgs) => {
+
 	let database: PrismaClient | undefined
 	try {
 		database = await getDatabaseConnection()
 
-		data.data.updatedAt = now()
-
 		return await database.user.update({
 			...data,
-			where: {
-				email,
-			}
+			data: {
+				...data.data,
+				updatedAt: now(),
+			},
 		})
 	} catch (error) {
 		throw handlePrismaError(error)
@@ -90,7 +91,17 @@ export const update = async (email: string, data: Prisma.UserUpdateArgs) => {
 	}
 }
 
-export const upsert = async (email: string, data: Omit<Prisma.UserUpsertArgs, 'where'>) => {
+export const updateWithId = async (id: string, data: Omit<Prisma.UserUpdateArgs, 'where'>) => {
+	return await update({
+		...data,
+		where: {
+			id,
+		},
+	})
+}
+
+
+export const upsert = async ( data: Prisma.UserUpsertArgs) => {
 	let database: PrismaClient | undefined
 	try {
 		database = await getDatabaseConnection()
@@ -101,9 +112,6 @@ export const upsert = async (email: string, data: Omit<Prisma.UserUpsertArgs, 'w
 				...data.update,
 				updatedAt: now(),
 			},
-			where: {
-				email,
-			}
 		}
 		return await database.user.upsert(model)
 	} catch (error) {
@@ -113,6 +121,18 @@ export const upsert = async (email: string, data: Omit<Prisma.UserUpsertArgs, 'w
 		await database?.$disconnect()
 	}
 }
+
+export const upsertWithId = async (id: string, data: Omit<Prisma.UserUpsertArgs, 'where'>) => {
+	const model: Prisma.UserUpsertArgs = {
+		...data,
+		where: {
+			id,
+		}
+	}
+
+	return await upsert(model)
+}
+
 
 export const remove = async (data: Prisma.UserDeleteArgs) => {
 	let database: PrismaClient | undefined

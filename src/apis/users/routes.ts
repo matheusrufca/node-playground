@@ -2,7 +2,7 @@ import express, { Request, Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import UserController from './controller'
 import { CreateUserRequest, EditUserRequest, GetResponse, Params, SearchRequest, UpsertUserRequest } from './models'
-import { apiRequestValidation } from './../../config/api-validation';
+import { validationHandler } from './../../config/api-validation';
 
 const router: Router = express.Router({ strict: true })
 
@@ -28,7 +28,7 @@ router.get('/:entityId', async (req: Request<Params, GetResponse>, res, next) =>
 	}
 })
 
-router.post('/', apiRequestValidation(CreateUserRequest), async (req: Request<{}, void, CreateUserRequest>, res, next) => {
+router.post('/', validationHandler(CreateUserRequest), async (req: Request<{}, void, CreateUserRequest>, res, next) => {
 	try {
 		const controller = new UserController()
 		const response = await controller.create(req.body)
@@ -51,7 +51,6 @@ router.patch('/:entityId', async (req: Request<Params, void, EditUserRequest>, r
 		next(error)
 	}
 })
-
 
 router.put('/:entityId', async (req: Request<Params, void, UpsertUserRequest>, res, next) => {
 	try {

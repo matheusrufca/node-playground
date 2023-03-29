@@ -3,37 +3,32 @@ import { validateOrReject, ValidationError } from 'class-validator'
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { BadRequestError } from '../exceptions'
 
-const validateRequestBody = async <T extends object, B = {}>(
-	dtoClass: ClassConstructor<T>,
-	body: B
-): Promise<void> => {
-	const result = plainToInstance(dtoClass, body)
-	return await validateOrReject(result, { skipMissingProperties: true })
+const extractErrorMessages = (errors: ValidationError[]): string => {
+	return errors.map(({ constraints }) => {
+		if (!constraints) return ''
+		return Object.entries(constraints).map(([key, value]) => value).join('\n')
+	}).join('\n')
 }
 
-const handleInvalidRequest = async <T extends object>(
+const handleRequest = async <T extends object>(
+	dtoClass: ClassConstructor<T>,
 	req: Request,
-	dtoClass: ClassConstructor<T>
 ): Promise<void> => {
 	try {
-		await validateRequestBody(dtoClass, req.body)
+		const validationResult = plainToInstance(dtoClass, req.body)
+		await validateOrReject(validationResult, { skipMissingProperties: true })
 	} catch (error) {
-		const errors = error as ValidationError[]
-		const errorMessage = errors.map(({ constraints }) => {
-			if (!constraints) return []
-			return Object.entries(constraints).map(([key, value]) => value).join('\n')
-		}).join('\n')
-
+		const errorMessage = extractErrorMessages(error as ValidationError[])
 		throw new BadRequestError('Invalid request', errorMessage, error)
 	}
 }
 
-export const apiRequestValidation = <T extends object>(
+export const validationHandler = <T extends object>(
 	dtoClass: ClassConstructor<T>
 ): RequestHandler => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		return Promise
-			.resolve(handleInvalidRequest(req, dtoClass))
-			.catch(error => next(error))
+			.resolve(handleRequest(dtoClass, req))
+			.catch(next)
 	}
 }

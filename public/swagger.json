@@ -102,6 +102,62 @@
 			"GetResponse": {
 				"$ref": "#/components/schemas/BaseResponse_User_"
 			},
+			"NotFoundError": {
+				"properties": {
+					"name": {
+						"type": "string",
+						"enum": [
+							"NOT_FOUND"
+						],
+						"nullable": false
+					},
+					"message": {
+						"type": "string"
+					},
+					"stack": {
+						"type": "string"
+					},
+					"cause": {},
+					"description": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"message",
+					"cause"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UnprocessableEntityError": {
+				"properties": {
+					"name": {
+						"type": "string",
+						"enum": [
+							"UNPROCESSABLE_ENTITY"
+						],
+						"nullable": false
+					},
+					"message": {
+						"type": "string"
+					},
+					"stack": {
+						"type": "string"
+					},
+					"cause": {},
+					"description": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"message",
+					"cause"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"CreateUserRequest": {
 				"properties": {
 					"email": {
@@ -195,6 +251,16 @@
 				"responses": {
 					"201": {
 						"description": "Created"
+					},
+					"422": {
+						"description": "Validation Failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UnprocessableEntityError"
+								}
+							}
+						}
 					}
 				},
 				"security": [],
@@ -224,6 +290,16 @@
 								}
 							}
 						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/NotFoundError"
+								}
+							}
+						}
 					}
 				},
 				"security": [],
@@ -243,6 +319,16 @@
 				"responses": {
 					"204": {
 						"description": "No Content"
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/NotFoundError"
+								}
+							}
+						}
 					}
 				},
 				"security": [],
@@ -272,6 +358,16 @@
 				"responses": {
 					"204": {
 						"description": "No Content"
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/NotFoundError"
+								}
+							}
+						}
 					}
 				},
 				"security": [],
@@ -307,6 +403,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/GetResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/NotFoundError"
 								}
 							}
 						}

@@ -27,6 +27,10 @@ export const apiErrorHandler = (error: Error, req: Request, res: Response, next:
 			res.status(StatusCodes.BAD_REQUEST)
 			break
 		}
+		case BadRequestError: {
+			res.status(StatusCodes.UNPROCESSABLE_ENTITY)
+			break
+		}
 		case NotFoundError: {
 			res.status(StatusCodes.NOT_FOUND)
 			break

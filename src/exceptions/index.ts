@@ -1,6 +1,7 @@
 type ErrorName =
 	'UNKNOWN_ERROR'
 	| 'BAD_REQUEST'
+	| 'UNPROCESSABLE_ENTITY'
 	| 'NOT_FOUND'
 	| 'INTERNAL_SERVER_ERROR'
 
@@ -30,6 +31,18 @@ export class BadRequestError extends BaseError<'BAD_REQUEST'> {
 	constructor(message: string, description?: string, cause?: any) {
 		super({
 			name: 'BAD_REQUEST',
+			message,
+			description,
+			cause,
+		})
+	}
+}
+
+
+export class UnprocessableEntityError extends BaseError<'UNPROCESSABLE_ENTITY'> {
+	constructor(message: string, description?: string, cause?: any) {
+		super({
+			name: 'UNPROCESSABLE_ENTITY',
 			message,
 			description,
 			cause,

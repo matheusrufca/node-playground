@@ -104,18 +104,19 @@
 			},
 			"CreateUserRequest": {
 				"properties": {
-					"name": {
+					"email": {
 						"type": "string"
 					},
-					"email": {
+					"name": {
 						"type": "string"
 					}
 				},
 				"required": [
-					"name",
-					"email"
+					"email",
+					"name"
 				],
-				"type": "object"
+				"type": "object",
+				"additionalProperties": false
 			},
 			"EditUserRequest": {
 				"properties": {

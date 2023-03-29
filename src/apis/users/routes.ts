@@ -1,8 +1,8 @@
-import express, { Router, Request } from 'express'
+import express, { Request, Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { IRequest } from '../types'
 import UserController from './controller'
 import { CreateUserRequest, EditUserRequest, GetResponse, Params, SearchRequest, UpsertUserRequest } from './models'
+import { apiRequestValidation } from './../../config/api-validation';
 
 const router: Router = express.Router({ strict: true })
 
@@ -28,13 +28,14 @@ router.get('/:entityId', async (req: Request<Params, GetResponse>, res, next) =>
 	}
 })
 
-router.post('/', async (req: Request<{}, void, CreateUserRequest>, res, next) => {
+router.post('/', apiRequestValidation(CreateUserRequest), async (req: Request<{}, void, CreateUserRequest>, res, next) => {
 	try {
 		const controller = new UserController()
 		const response = await controller.create(req.body)
 		res.status(StatusCodes.CREATED)
 		res.json(response)
 	} catch (error) {
+		console.debug('catch error', error)
 		next(error)
 	}
 })
@@ -78,3 +79,4 @@ router.post('/search', async (req: Request<{}, GetResponse, SearchRequest>, res,
 
 export default router
 export { router }
+

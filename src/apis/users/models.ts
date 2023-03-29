@@ -1,4 +1,6 @@
 import { User } from '@prisma/client'
+import { Expose } from 'class-transformer'
+import { IsDefined, IsEmail } from 'class-validator'
 import { BaseResponse } from '../types'
 
 export type Params = {
@@ -11,9 +13,15 @@ export type GetResponse = BaseResponse<User>
 
 export type SearchRequest = { email: string }
 
-export type CreateUserRequest = {
-	email: string
-	name: string
+export class CreateUserRequest {
+	@IsDefined()
+	@Expose()
+	@IsEmail()
+	email!: string
+	
+	@IsDefined()
+	@Expose()
+	name!: string
 }
 
 export type EditUserRequest = {

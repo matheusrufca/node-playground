@@ -27,11 +27,12 @@ export class BaseError<T extends ErrorName = ErrorName> extends Error {
 }
 
 export class BadRequestError extends BaseError<'BAD_REQUEST'> {
-	constructor(message: string, description?: string) {
+	constructor(message: string, description?: string, cause?: any) {
 		super({
 			name: 'BAD_REQUEST',
 			message,
 			description,
+			cause,
 		})
 	}
 }

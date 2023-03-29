@@ -40,7 +40,7 @@ app.use(BASE_URL, routes)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-	next(createError(createError.NotFound()))
+	next(createError(createError.NotFound('Route not found')))
 })
 
 // error handler

@@ -1,21 +1,24 @@
 import { StatusCodes } from 'http-status-codes'
-import { Body, Get, Path, Post, Response, Route, SuccessResponse } from 'tsoa'
+import { Body, Get, Patch, Path, Post, Response, Route, SuccessResponse } from 'tsoa'
 
 import { ErrorService, NotFoundError, UnprocessableEntityError } from '../../exceptions'
 import { UserRepository } from '../../repositories'
-import { hashPassword } from '../../utils/hash'
+import { comparePassword } from '../../utils/hash'
 import {
+	ChangeEmail,
+	ChangePassword,
 	GetAllResponse,
 	GetResponse,
 	RegisterUser,
-	SearchRequest
+	SearchRequest,
+	UserDTO
 } from './models'
 
 
 @Route('users')
 export default class UserController {
 	@Get('/')
-	public async getAll(): Promise<GetAllResponse> {
+	async getAll(): Promise<GetAllResponse> {
 		const result = await UserRepository.getAll()
 		return {
 			content: result
@@ -24,7 +27,7 @@ export default class UserController {
 
 	@Get('/{entityId}')
 	@Response<NotFoundError>(StatusCodes.NOT_FOUND, 'Not found')
-	public async getById(@Path() entityId: string): Promise<GetResponse> {
+	async getById(@Path() entityId: string): Promise<GetResponse> {
 		const result = await UserRepository.getById(entityId)
 
 		if (!result) throw ErrorService.createNotFoundError('User not found')
@@ -36,7 +39,7 @@ export default class UserController {
 
 	@Post('/search')
 	@Response<NotFoundError>(StatusCodes.NOT_FOUND, 'Not found')
-	public async getByEmail(@Body() { email }: SearchRequest): Promise<GetResponse> {
+	async getByEmail(@Body() { email }: SearchRequest): Promise<GetResponse> {
 		const result = await UserRepository.getByEmail(email)
 
 		if (!result) throw ErrorService.createNotFoundError('User not found')
@@ -49,18 +52,81 @@ export default class UserController {
 	@Post('/register')
 	@SuccessResponse(StatusCodes.CREATED, 'Created')
 	@Response<UnprocessableEntityError>(StatusCodes.UNPROCESSABLE_ENTITY)
-	public async register(@Body() body: RegisterUser): Promise<void> {
-		const result = await UserRepository.getByEmail(body.email)
-		if (result)
-			throw ErrorService.createUnprocessableEntityError('Email already taken')
-
+	async register(@Body() body: RegisterUser): Promise<void> {
 		// TODO: move to middleware
 		const { email, password } = RegisterUser.fromBody(body)
+		const user = await UserRepository.getByEmail(email)
+
+		this.validateEmailNotTaken(email, user)
 
 		await UserRepository.create({
 			email,
 			password,
 		})
+	}
 
+	@Patch('/{entityId}/change-password')
+	@SuccessResponse(StatusCodes.OK)
+	@Response<UnprocessableEntityError>(StatusCodes.NOT_FOUND)
+	@Response<UnprocessableEntityError>(StatusCodes.UNPROCESSABLE_ENTITY)
+	async changePassword(
+		@Path() entityId: string,
+		@Body() body: ChangePassword
+	): Promise<void> {
+		// TODO: move to middleware
+		const { currentPassword, newPassword } = ChangePassword.fromBody(body)
+		const user = await UserRepository.getById(entityId)
+
+		this.validateUserExist(user)
+		this.validateCurrentPassword(currentPassword, user?.password || '')
+
+		await UserRepository.updateWithId(entityId, {
+			data: {
+				password: newPassword,
+			},
+			select: {
+				password: true,
+			},
+		})
+	}
+
+	@Patch('/{entityId}/change-email')
+	@SuccessResponse(StatusCodes.OK)
+	@Response<UnprocessableEntityError>(StatusCodes.NOT_FOUND)
+	@Response<UnprocessableEntityError>(StatusCodes.UNPROCESSABLE_ENTITY)
+	async changeEmail(
+		@Path() entityId: string,
+		@Body() body: ChangeEmail
+	): Promise<void> {
+		// TODO: move to middleware
+		const { newEmail } = ChangeEmail.fromBody(body)
+		const user = await UserRepository.getById(entityId)
+
+		this.validateUserExist(user)
+
+		await UserRepository.updateWithId(entityId, {
+			data: {
+				email: newEmail,
+			},
+			select: {
+				email: true,
+			},
+		})
+	}
+
+	private validateCurrentPassword(password: string, storedHash: string): void {
+		if (!comparePassword(password, storedHash))
+			throw ErrorService.createUnauthorizedError('Invalid password')
+	}
+
+	private validateUserExist(user?: UserDTO | null): void {
+		console.debug('user', user)
+		if (!user)
+			throw ErrorService.createNotFoundError('User not found')
+	}
+
+	private validateEmailNotTaken(email: string, user?: UserDTO | null): void {
+		if (user && user.email === email)
+			throw ErrorService.createUnprocessableEntityError('Email already taken')
 	}
 }

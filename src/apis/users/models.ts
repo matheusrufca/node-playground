@@ -47,14 +47,40 @@ export class RegisterUser {
 	@Transform(({ value }) => hashPassword(value))
 	readonly password!: string
 
-	@Expose()
-	getPasswordHash(): string {
-		return hashPassword(this.password)
-	}
-
 
 	// TODO: move to middleware
 	static fromBody(body: RegisterUser): RegisterUser {
 		return plainToInstance(RegisterUser, body)
 	}
 }
+
+export class ChangePassword {
+	@IsDefined()
+	@Expose()
+	// @Transform(({ value }) => hashPassword(value))
+	readonly currentPassword!: string
+
+	@IsDefined()
+	@Expose()
+	@Transform(({ value }) => hashPassword(value))
+	readonly newPassword!: string
+
+	// TODO: move to middleware
+	static fromBody(body: ChangePassword): ChangePassword {
+		return plainToInstance(ChangePassword, body)
+	}
+}
+
+export class ChangeEmail {
+	@IsDefined()
+	@Expose()
+	@IsEmail()
+	readonly newEmail!: string
+
+	// TODO: move to middleware
+	static fromBody(body: ChangeEmail): ChangeEmail {
+		return plainToInstance(ChangeEmail, body)
+	}
+}
+
+export type UserDTO = User

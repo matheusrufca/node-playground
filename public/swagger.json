@@ -138,12 +138,17 @@
 					"cause": {},
 					"description": {
 						"type": "string"
+					},
+					"code": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
 					"name",
 					"message",
-					"cause"
+					"cause",
+					"code"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -177,12 +182,17 @@
 					"cause": {},
 					"description": {
 						"type": "string"
+					},
+					"code": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
 					"name",
 					"message",
-					"cause"
+					"cause",
+					"code"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -199,6 +209,34 @@
 				"required": [
 					"email",
 					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ChangePassword": {
+				"properties": {
+					"currentPassword": {
+						"type": "string"
+					},
+					"newPassword": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"currentPassword",
+					"newPassword"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ChangeEmail": {
+				"properties": {
+					"newEmail": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"newEmail"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -338,6 +376,108 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/RegisterUser"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/{entityId}/change-password": {
+			"patch": {
+				"operationId": "ChangePassword",
+				"responses": {
+					"200": {
+						"description": ""
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UnprocessableEntityError"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UnprocessableEntityError"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "entityId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ChangePassword"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/{entityId}/change-email": {
+			"patch": {
+				"operationId": "ChangeEmail",
+				"responses": {
+					"200": {
+						"description": ""
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UnprocessableEntityError"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UnprocessableEntityError"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "entityId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ChangeEmail"
 							}
 						}
 					}

@@ -1,9 +1,9 @@
-import express, { Request, Router } from 'express'
+import express, { Request, Response, Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
 
-import UserController from './controller'
-import { CreateUserRequest, EditUserRequest, GetResponse, Params, RegisterUser, SearchRequest, UpsertUserRequest } from './models'
 import { validationHandler } from './../../config/api-validation'
+import UserController from './controller'
+import { ChangeEmail, ChangePassword, GetResponse, Params, RegisterUser, SearchRequest } from './models'
 
 const router: Router = express.Router({ strict: true })
 
@@ -18,6 +18,7 @@ router.get('/', async (req, res, next) => {
 	}
 })
 
+
 router.get('/:entityId', async (req: Request<Params, GetResponse>, res, next) => {
 	try {
 		const { entityId } = req.params
@@ -28,6 +29,7 @@ router.get('/:entityId', async (req: Request<Params, GetResponse>, res, next) =>
 		next(error)
 	}
 })
+
 
 router.post('/search', async (req: Request<{}, GetResponse, SearchRequest>, res, next) => {
 	try {
@@ -41,7 +43,7 @@ router.post('/search', async (req: Request<{}, GetResponse, SearchRequest>, res,
 })
 
 
-router.post('/register', validationHandler(RegisterUser), async (req: Request<{}, void, RegisterUser>, res, next) => {
+router.post('/register', validationHandler(RegisterUser), async (req: Request<{}, void, RegisterUser>, res: Response, next) => {
 	try {
 		const controller = new UserController()
 		const response = await controller.register(req.body)
@@ -49,6 +51,31 @@ router.post('/register', validationHandler(RegisterUser), async (req: Request<{}
 		res.json(response)
 	} catch (error) {
 		console.debug('catch error', error)
+		next(error)
+	}
+})
+
+router.patch('/:entityId/change-password', validationHandler(ChangePassword), async (req: Request<Params, void, ChangePassword>, res: Response, next) => {
+	try {
+		const { entityId } = req.params
+		const controller = new UserController()
+		const response = await controller.changePassword(entityId, req.body)
+		res.status(StatusCodes.OK)
+		res.json(response)
+	} catch (error) {
+		next(error)
+	}
+})
+
+
+router.patch('/:entityId/change-email', validationHandler(ChangeEmail), async (req: Request<Params, void, ChangeEmail>, res: Response, next) => {
+	try {
+		const { entityId } = req.params
+		const controller = new UserController()
+		const response = await controller.changeEmail(entityId, req.body)
+		res.status(StatusCodes.OK)
+		res.json(response)
+	} catch (error) {
 		next(error)
 	}
 })

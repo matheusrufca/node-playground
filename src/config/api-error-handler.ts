@@ -2,12 +2,12 @@ import { NextFunction, Request, Response } from 'express'
 import { getStatusCode, StatusCodes } from 'http-status-codes'
 
 import { ResponseError } from '../apis/types'
-import { BadRequestError, BaseError, NotFoundError } from '../exceptions'
+import { BadRequestError, HttpBaseError, NotFoundError } from '../exceptions'
 import { UnprocessableEntityError } from './../exceptions/index';
 
 
 const toResponseError = (error: Error): ResponseError => {
-	if (error instanceof BaseError) {
+	if (error instanceof HttpBaseError) {
 		return {
 			code: error.name,
 			message: error.message,
@@ -23,24 +23,12 @@ const toResponseError = (error: Error): ResponseError => {
 }
 
 export const apiErrorHandler = (error: Error, req: Request, res: Response, next: NextFunction) => {
-	switch (error.constructor) {
-		case BadRequestError: {
-			res.status(StatusCodes.BAD_REQUEST)
-			break
-		}
-		case UnprocessableEntityError: {
-			res.status(StatusCodes.UNPROCESSABLE_ENTITY)
-			break
-		}
-		case NotFoundError: {
-			res.status(StatusCodes.NOT_FOUND)
-			break
-		}
-		default: {
-			res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-			break
-		}
-	}
+
+	const httpStatus = error instanceof HttpBaseError
+		? error.code
+		: StatusCodes.INTERNAL_SERVER_ERROR
+
+	res.status(httpStatus)
 	res.send(toResponseError(error))
 }
 

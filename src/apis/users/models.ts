@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
 import { Expose, Transform, plainToInstance } from 'class-transformer';
-import { IsDefined, IsEmail } from 'class-validator';
+import { IsDefined, IsEmail, IsPostalCode } from 'class-validator';
 import { BaseResponse } from '../types';
 import { hashPassword } from './../../utils/hash';
 
@@ -8,6 +8,8 @@ export type Params = {
 	entityId: string,
 	[key: string]: string
 }
+
+export type UserDTO = User
 
 export type GetAllResponse = BaseResponse<User[]>
 export type GetResponse = BaseResponse<User>
@@ -83,4 +85,32 @@ export class ChangeEmail {
 	}
 }
 
-export type UserDTO = User
+export class EditProfile {
+	@Expose()
+	readonly name?: string
+
+	@Expose()
+	readonly bio?: string
+
+	@Expose()
+	readonly website?: string
+
+	@Expose()
+	readonly city?: string
+
+	@Expose()
+	readonly state?: string
+
+	@Expose()
+	readonly country?: string
+
+	@Expose()
+	@IsPostalCode('US')
+	readonly postalCode?: string
+
+	// TODO: move to middleware
+	static fromBody(body: EditProfile): EditProfile {
+		return plainToInstance(EditProfile, body)
+	}
+}
+

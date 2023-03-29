@@ -1,9 +1,8 @@
-import { NextFunction, Request, Response } from 'express'
-import { getStatusCode, StatusCodes } from 'http-status-codes'
+import { NextFunction, Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 
-import { ResponseError } from '../apis/types'
-import { BadRequestError, HttpBaseError, NotFoundError } from '../exceptions'
-import { UnprocessableEntityError } from './../exceptions/index';
+import { ResponseError } from '../apis/types';
+import { HttpBaseError } from '../exceptions';
 
 
 const toResponseError = (error: Error): ResponseError => {

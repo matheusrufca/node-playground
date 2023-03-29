@@ -3,7 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 
 import { validationHandler } from './../../config/api-validation'
 import UserController from './controller'
-import { ChangeEmail, ChangePassword, GetResponse, Params, RegisterUser, SearchRequest } from './models'
+import { ChangeEmail, ChangePassword, EditProfile, GetResponse, Params, RegisterUser, SearchRequest } from './models'
 
 const router: Router = express.Router({ strict: true })
 
@@ -73,6 +73,18 @@ router.patch('/:entityId/change-email', validationHandler(ChangeEmail), async (r
 		const { entityId } = req.params
 		const controller = new UserController()
 		const response = await controller.changeEmail(entityId, req.body)
+		res.status(StatusCodes.OK)
+		res.json(response)
+	} catch (error) {
+		next(error)
+	}
+})
+
+router.put('/:entityId/profile', validationHandler(EditProfile), async (req: Request<Params, void, EditProfile>, res: Response, next) => {
+	try {
+		const { entityId } = req.params
+		const controller = new UserController()
+		const response = await controller.editProfile(entityId, req.body)
 		res.status(StatusCodes.OK)
 		res.json(response)
 	} catch (error) {

@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes'
-import { Body, Get, Patch, Path, Post, Response, Route, SuccessResponse } from 'tsoa'
+import { Body, Get, Patch, Path, Post, Put, Response, Route, SuccessResponse } from 'tsoa'
 
 import { ErrorService, NotFoundError, UnprocessableEntityError } from '../../exceptions'
 import { UserRepository } from '../../repositories'
@@ -7,6 +7,7 @@ import { comparePassword } from '../../utils/hash'
 import {
 	ChangeEmail,
 	ChangePassword,
+	EditProfile,
 	GetAllResponse,
 	GetResponse,
 	RegisterUser,
@@ -114,13 +115,40 @@ export default class UserController {
 		})
 	}
 
+	@Put('/{entityId}/profile')
+	@SuccessResponse(StatusCodes.OK)
+	@Response<UnprocessableEntityError>(StatusCodes.NOT_FOUND)
+	@Response<UnprocessableEntityError>(StatusCodes.UNPROCESSABLE_ENTITY)
+	async editProfile(
+		@Path() entityId: string,
+		@Body() body: EditProfile
+	): Promise<void> {
+		// TODO: move to middleware
+		const profile = EditProfile.fromBody(body)
+		const user = await UserRepository.getById(entityId)
+		const currentProfile = user?.profile || {}
+
+		this.validateUserExist(user)
+
+		await UserRepository.updateWithId(entityId, {
+			data: {
+				profile: {
+					...currentProfile,
+					...profile,
+				},
+			},
+			select: {
+				profile: true,
+			},
+		})
+	}
+
 	private validateCurrentPassword(password: string, storedHash: string): void {
 		if (!comparePassword(password, storedHash))
 			throw ErrorService.createUnauthorizedError('Invalid password')
 	}
 
 	private validateUserExist(user?: UserDTO | null): void {
-		console.debug('user', user)
 		if (!user)
 			throw ErrorService.createNotFoundError('User not found')
 	}

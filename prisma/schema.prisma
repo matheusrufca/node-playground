@@ -28,13 +28,13 @@ model User {
 
 // Address is an embedded document
 type Profile {
-  name    String?
-  bio     String?
-  website String?
-  city    String?
-  state   String?
-  country String?
-  zip     String?
+  name    		String?
+  bio     		String?
+  website 		String?
+  city    		String?
+  state   		String?
+  country 		String?
+  postalCode  String?
 }
 
 // prima generate

@@ -61,17 +61,19 @@ export class NotFoundError extends BaseError<'NOT_FOUND'> {
 }
 
 export class InternalServerError extends BaseError<'INTERNAL_SERVER_ERROR'> {
-	constructor(error: Error, message: string, description?: string) {
+	constructor(error: Error, message: string, description?: string, cause?: any) {
 		super({
 			name: 'INTERNAL_SERVER_ERROR',
 			message,
 			description: description || error.message,
+			cause,
 		})
 	}
 }
 
-export const ServiceError = {
-	createBadRequestError: (message: string, description?: string): BadRequestError => new BadRequestError(message, description),
-	createNotFoundError: (message: string, description?: string): NotFoundError => new NotFoundError(message, description),
-	createInternalServerError: (error: Error, message: string, description?: string): InternalServerError => new InternalServerError(error, message, description),
+export const ErrorService = {
+	createBadRequestError: (message: string, description?: string, cause?: any): BadRequestError => new BadRequestError(message, description, cause),
+	createUnprocessableEntityError: (message: string, description?: string, cause?: any): UnprocessableEntityError => new UnprocessableEntityError(message, description, cause),
+	createNotFoundError: (message: string, description?: string, cause?: any): NotFoundError => new NotFoundError(message, description),
+	createInternalServerError: (error: Error, message: string, description?: string, cause?: any): InternalServerError => new InternalServerError(error, message, description, cause),
 }

@@ -2,7 +2,7 @@ import express, { Request, Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
 
 import UserController from './controller'
-import { CreateUserRequest, EditUserRequest, GetResponse, Params, SearchRequest, UpsertUserRequest } from './models'
+import { CreateUserRequest, EditUserRequest, GetResponse, Params, RegisterUser, SearchRequest, UpsertUserRequest } from './models'
 import { validationHandler } from './../../config/api-validation'
 
 const router: Router = express.Router({ strict: true })
@@ -29,42 +29,6 @@ router.get('/:entityId', async (req: Request<Params, GetResponse>, res, next) =>
 	}
 })
 
-router.post('/', validationHandler(CreateUserRequest), async (req: Request<{}, void, CreateUserRequest>, res, next) => {
-	try {
-		const controller = new UserController()
-		const response = await controller.create(req.body)
-		res.status(StatusCodes.CREATED)
-		res.json(response)
-	} catch (error) {
-		console.debug('catch error', error)
-		next(error)
-	}
-})
-
-router.patch('/:entityId', async (req: Request<Params, void, EditUserRequest>, res, next) => {
-	try {
-		const { entityId } = req.params
-		const controller = new UserController()
-		const response = await controller.editWithId(entityId, req.body)
-		res.status(StatusCodes.CREATED)
-		res.json(response)
-	} catch (error) {
-		next(error)
-	}
-})
-
-router.put('/:entityId', async (req: Request<Params, void, UpsertUserRequest>, res, next) => {
-	try {
-		const { entityId } = req.params
-		const controller = new UserController()
-		const response = await controller.upsert(entityId, req.body)
-		res.status(StatusCodes.CREATED)
-		res.json(response)
-	} catch (error) {
-		next(error)
-	}
-})
-
 router.post('/search', async (req: Request<{}, GetResponse, SearchRequest>, res, next) => {
 	try {
 		const { email } = req.body
@@ -72,6 +36,19 @@ router.post('/search', async (req: Request<{}, GetResponse, SearchRequest>, res,
 		const response = await controller.getByEmail({ email })
 		res.json(response)
 	} catch (error) {
+		next(error)
+	}
+})
+
+
+router.post('/register', validationHandler(RegisterUser), async (req: Request<{}, void, RegisterUser>, res, next) => {
+	try {
+		const controller = new UserController()
+		const response = await controller.register(req.body)
+		res.status(StatusCodes.CREATED)
+		res.json(response)
+	} catch (error) {
+		console.debug('catch error', error)
 		next(error)
 	}
 })

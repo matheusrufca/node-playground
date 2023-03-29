@@ -2,7 +2,7 @@ import { ClassConstructor, plainToInstance } from 'class-transformer'
 import { validateOrReject, ValidationError } from 'class-validator'
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 
-import { UnprocessableEntityError } from '../exceptions'
+import { ErrorService, UnprocessableEntityError } from '../exceptions'
 
 const extractErrorMessages = (errors: ValidationError[]): string => {
 	return errors.map(({ constraints }) => {
@@ -20,7 +20,7 @@ const handleRequest = async <T extends object>(
 		await validateOrReject(validationResult, { skipMissingProperties: true })
 	} catch (error) {
 		const errorMessage = extractErrorMessages(error as ValidationError[])
-		throw new UnprocessableEntityError('Validation error', errorMessage, error)
+		throw ErrorService.createUnprocessableEntityError('Validation error', errorMessage, error)
 	}
 }
 

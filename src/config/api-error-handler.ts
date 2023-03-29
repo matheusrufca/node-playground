@@ -3,6 +3,7 @@ import { getStatusCode, StatusCodes } from 'http-status-codes'
 
 import { ResponseError } from '../apis/types'
 import { BadRequestError, BaseError, NotFoundError } from '../exceptions'
+import { UnprocessableEntityError } from './../exceptions/index';
 
 
 const toResponseError = (error: Error): ResponseError => {
@@ -27,7 +28,7 @@ export const apiErrorHandler = (error: Error, req: Request, res: Response, next:
 			res.status(StatusCodes.BAD_REQUEST)
 			break
 		}
-		case BadRequestError: {
+		case UnprocessableEntityError: {
 			res.status(StatusCodes.UNPROCESSABLE_ENTITY)
 			break
 		}

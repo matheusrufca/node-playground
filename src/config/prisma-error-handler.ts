@@ -1,6 +1,6 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
-import { BaseError, ServiceError } from '../exceptions';
+import { BaseError, ErrorService } from '../exceptions';
 import { isError } from './../utils/error';
 
 
@@ -15,20 +15,20 @@ const ErrorMessages: Record<PrismaErrors, string> = Object.freeze({
 const handlePrismaKnownError = (error: PrismaClientKnownRequestError): BaseError => {
 	switch (error.code) {
 		case 'P2002': {
-			return ServiceError.createBadRequestError(ErrorMessages[error.code], JSON.stringify(error.meta))
+			return ErrorService.createBadRequestError(ErrorMessages[error.code], JSON.stringify(error.meta))
 		}
 		case 'P2023': {
-			return ServiceError.createBadRequestError(ErrorMessages[error.code], JSON.stringify(error.meta))
+			return ErrorService.createBadRequestError(ErrorMessages[error.code], JSON.stringify(error.meta))
 		}
 		default: {
-			return ServiceError.createInternalServerError(error, JSON.stringify(error.meta))
+			return ErrorService.createInternalServerError(error, JSON.stringify(error.meta))
 		}
 	}
 }
 
 export const handlePrismaError = (error: unknown): BaseError => {
 	if (!isError(error)) {
-		return ServiceError.createInternalServerError(new Error(), 'Unknown error')
+		return ErrorService.createInternalServerError(new Error(), 'Unknown error')
 	}
 
 	switch (error.constructor) {
@@ -36,7 +36,7 @@ export const handlePrismaError = (error: unknown): BaseError => {
 			return handlePrismaKnownError(error as PrismaClientKnownRequestError)
 		}
 		default: {
-			return ServiceError.createInternalServerError(error, error.message)
+			return ErrorService.createInternalServerError(error, error.message)
 		}
 	}
 }

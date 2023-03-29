@@ -19,21 +19,23 @@ model Post {
 model User {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   email     String    @unique
-  name      String?
-  address   Address?
+  password  String
+  profile   Profile?
   posts     Post[]
   createdAt DateTime  @default(now()) @map("_createdAt")
   updatedAt DateTime? @map("_updatedAt")
 }
 
 // Address is an embedded document
-type Address {
-  street String
-  city   String
-  state  String
-  zip    String
+type Profile {
+  name    String?
+  bio     String?
+  website String?
+  city    String?
+  state   String?
+  country String?
+  zip     String?
 }
-
 
 // prima generate
 // prisma db push

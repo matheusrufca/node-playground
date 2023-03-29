@@ -29,6 +29,7 @@ export const validationHandler = <T extends object>(
 	return (req: Request, res: Response, next: NextFunction) => {
 		return Promise
 			.resolve(handleRequest(dtoClass, req))
+			.then(next)
 			.catch(next)
 	}
 }

@@ -1,8 +1,9 @@
 import express, { Request, Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
+
 import UserController from './controller'
 import { CreateUserRequest, EditUserRequest, GetResponse, Params, SearchRequest, UpsertUserRequest } from './models'
-import { validationHandler } from './../../config/api-validation';
+import { validationHandler } from './../../config/api-validation'
 
 const router: Router = express.Router({ strict: true })
 

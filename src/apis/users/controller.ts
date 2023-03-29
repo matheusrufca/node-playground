@@ -1,8 +1,9 @@
-import { StatusCodes } from 'http-status-codes';
-import { Body, Get, Patch, Path, Post, Put, Route, SuccessResponse } from "tsoa";
-import { ServiceError } from '../../exceptions';
-import { UserRepository } from '../../repositories';
-import { CreateUserRequest, EditUserRequest, GetAllResponse, GetResponse, SearchRequest, UpsertUserRequest } from './models';
+import { StatusCodes } from 'http-status-codes'
+import { Body, Get, Patch, Path, Post, Put, Route, SuccessResponse } from "tsoa"
+
+import { ServiceError } from '../../exceptions'
+import { UserRepository } from '../../repositories'
+import { CreateUserRequest, EditUserRequest, GetAllResponse, GetResponse, SearchRequest, UpsertUserRequest } from './models'
 
 
 @Route("users")

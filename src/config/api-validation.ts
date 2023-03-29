@@ -1,6 +1,7 @@
 import { ClassConstructor, plainToInstance } from 'class-transformer'
 import { validateOrReject, ValidationError } from 'class-validator'
 import { Request, Response, NextFunction, RequestHandler } from 'express'
+
 import { BadRequestError } from '../exceptions'
 
 const extractErrorMessages = (errors: ValidationError[]): string => {

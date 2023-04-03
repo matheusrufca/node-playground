@@ -7,6 +7,6 @@
 		"basePath": "/api/v1"
 	},
 	"routes": {
-		"routesDir": "src"
+		"routesDir": "src/**"
 	}
 }

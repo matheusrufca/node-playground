@@ -2,8 +2,8 @@ import express, { Request, Response, Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
 
 import { validationHandler } from './../../config/api-validation'
-import UserController from './controller'
-import { ChangeEmail, ChangePassword, EditProfile, GetResponse, Params, RegisterUser, SearchRequest } from './models'
+import { UserController } from './controller'
+import { ChangeEmailRequest, ChangePassword, EditProfileRequest, GetResponse, Params, RegisterUserRequest, SearchRequest } from './models'
 
 const router: Router = express.Router({ strict: true })
 
@@ -43,7 +43,7 @@ router.post('/search', async (req: Request<{}, GetResponse, SearchRequest>, res,
 })
 
 
-router.post('/register', validationHandler(RegisterUser), async (req: Request<{}, void, RegisterUser>, res: Response, next) => {
+router.post('/register', validationHandler(RegisterUserRequest), async (req: Request<{}, void, RegisterUserRequest>, res: Response, next) => {
 	try {
 		const controller = new UserController()
 		const response = await controller.register(req.body)
@@ -68,7 +68,7 @@ router.patch('/:entityId/change-password', validationHandler(ChangePassword), as
 })
 
 
-router.patch('/:entityId/change-email', validationHandler(ChangeEmail), async (req: Request<Params, void, ChangeEmail>, res: Response, next) => {
+router.patch('/:entityId/change-email', validationHandler(ChangeEmailRequest), async (req: Request<Params, void, ChangeEmailRequest>, res: Response, next) => {
 	try {
 		const { entityId } = req.params
 		const controller = new UserController()
@@ -80,7 +80,7 @@ router.patch('/:entityId/change-email', validationHandler(ChangeEmail), async (r
 	}
 })
 
-router.put('/:entityId/profile', validationHandler(EditProfile), async (req: Request<Params, void, EditProfile>, res: Response, next) => {
+router.put('/:entityId/profile', validationHandler(EditProfileRequest), async (req: Request<Params, void, EditProfileRequest>, res: Response, next) => {
 	try {
 		const { entityId } = req.params
 		const controller = new UserController()

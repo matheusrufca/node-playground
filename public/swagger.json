@@ -162,7 +162,8 @@
 				"required": [
 					"email"
 				],
-				"type": "object"
+				"type": "object",
+				"additionalProperties": false
 			},
 			"UnprocessableEntityError": {
 				"properties": {
@@ -197,7 +198,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"RegisterUser": {
+			"RegisterUserRequest": {
 				"properties": {
 					"email": {
 						"type": "string"
@@ -229,7 +230,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"ChangeEmail": {
+			"ChangeEmailRequest": {
 				"properties": {
 					"newEmail": {
 						"type": "string"
@@ -241,7 +242,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"EditProfile": {
+			"EditProfileRequest": {
 				"properties": {
 					"name": {
 						"type": "string"
@@ -402,7 +403,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/RegisterUser"
+								"$ref": "#/components/schemas/RegisterUserRequest"
 							}
 						}
 					}
@@ -504,7 +505,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/ChangeEmail"
+								"$ref": "#/components/schemas/ChangeEmailRequest"
 							}
 						}
 					}
@@ -555,7 +556,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/EditProfile"
+								"$ref": "#/components/schemas/EditProfileRequest"
 							}
 						}
 					}

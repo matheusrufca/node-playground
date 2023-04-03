@@ -14,31 +14,14 @@ export type UserDTO = User
 export type GetAllResponse = BaseResponse<User[]>
 export type GetResponse = BaseResponse<User>
 
-export type SearchRequest = { email: string }
-
-export class CreateUserRequest {
+export class SearchRequest {
 	@IsDefined()
 	@Expose()
 	@IsEmail()
-	email!: string
-
-	@IsDefined()
-	@Expose()
-	name!: string
+	readonly email!: string
 }
 
-export type EditUserRequest = {
-	email: string
-	name: string
-}
-
-export type UpsertUserRequest = {
-	email: string
-	name: string
-}
-
-
-export class RegisterUser {
+export class RegisterUserRequest {
 	@IsDefined()
 	@Expose()
 	@IsEmail()
@@ -51,8 +34,8 @@ export class RegisterUser {
 
 
 	// TODO: move to middleware
-	static fromBody(body: RegisterUser): RegisterUser {
-		return plainToInstance(RegisterUser, body)
+	static fromBody(body: RegisterUserRequest): RegisterUserRequest {
+		return plainToInstance(RegisterUserRequest, body)
 	}
 }
 
@@ -73,19 +56,19 @@ export class ChangePassword {
 	}
 }
 
-export class ChangeEmail {
+export class ChangeEmailRequest {
 	@IsDefined()
 	@Expose()
 	@IsEmail()
 	readonly newEmail!: string
 
 	// TODO: move to middleware
-	static fromBody(body: ChangeEmail): ChangeEmail {
-		return plainToInstance(ChangeEmail, body)
+	static fromBody(body: ChangeEmailRequest): ChangeEmailRequest {
+		return plainToInstance(ChangeEmailRequest, body)
 	}
 }
 
-export class EditProfile {
+export class EditProfileRequest {
 	@Expose()
 	readonly name?: string
 
@@ -109,8 +92,8 @@ export class EditProfile {
 	readonly postalCode?: string
 
 	// TODO: move to middleware
-	static fromBody(body: EditProfile): EditProfile {
-		return plainToInstance(EditProfile, body)
+	static fromBody(body: EditProfileRequest): EditProfileRequest {
+		return plainToInstance(EditProfileRequest, body)
 	}
 }
 

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { ErrorService } from '../exceptions';
-import { validateToken, validateUserIdentity } from './../utils/auth';
+import { validateToken, validateUserIdentity } from '../utils/security';
 
 
 export const isAuthenticatedHandler = async (req: Request, res: Response, next: NextFunction) => {

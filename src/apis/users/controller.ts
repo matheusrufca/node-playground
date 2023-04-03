@@ -3,7 +3,7 @@ import { Body, Get, Patch, Path, Post, Put, Response, Route, Security, SuccessRe
 
 import { ErrorService, NotFoundError, UnprocessableEntityError } from '../../exceptions'
 import { UserRepository } from '../../repositories'
-import { comparePassword } from '../../utils/auth'
+import { comparePassword } from '../../utils/security'
 import {
 	ChangeEmailRequest,
 	ChangePassword,

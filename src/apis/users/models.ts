@@ -2,7 +2,7 @@ import { User } from '@prisma/client';
 import { Expose, Transform, plainToInstance } from 'class-transformer';
 import { IsDefined, IsEmail, IsPostalCode } from 'class-validator';
 import { BaseResponse } from '../types';
-import { hashPassword } from '../../utils/auth';
+import { hashPassword } from '../../utils/security';
 
 export type Params = {
 	entityId: string,

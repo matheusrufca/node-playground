@@ -4,7 +4,7 @@ import { Body, Post, Response, Route, SuccessResponse } from 'tsoa'
 
 import { ErrorService, UnauthorizedError } from '../../exceptions'
 import { UserRepository } from '../../repositories'
-import { comparePassword, generateAccessToken } from '../../utils/auth'
+import { comparePassword, generateAccessToken } from '../../utils/security'
 import { AuthTokenRequest, AuthTokenResponse, UserDTO } from './models'
 
 @Route('auth')

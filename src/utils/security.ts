@@ -1,7 +1,7 @@
 import { compareSync, genSaltSync, hashSync } from 'bcrypt'
 import { JwtPayload, sign, verify as verifyToken } from 'jsonwebtoken'
 
-import { ErrorService } from './../exceptions/index'
+import { ErrorService } from '../exceptions/index'
 
 type UserIdentity = {
 	id: string

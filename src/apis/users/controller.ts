@@ -1,23 +1,23 @@
 import { StatusCodes } from 'http-status-codes'
-import { Body, Get, Patch, Path, Post, Put, Response, Route, SuccessResponse } from 'tsoa'
+import { Body, Get, Patch, Path, Post, Put, Response, Route, Security, SuccessResponse } from 'tsoa'
 
 import { ErrorService, NotFoundError, UnprocessableEntityError } from '../../exceptions'
 import { UserRepository } from '../../repositories'
-import { comparePassword } from '../../utils/hash'
+import { comparePassword } from '../../utils/security'
 import {
-	ChangeEmail,
+	ChangeEmailRequest,
 	ChangePassword,
-	EditProfile,
+	EditProfileRequest,
 	GetAllResponse,
 	GetResponse,
-	RegisterUser,
+	RegisterUserRequest,
 	SearchRequest,
 	UserDTO
 } from './models'
 
 
 @Route('users')
-export default class UserController {
+export class UserController {
 	@Get('/')
 	async getAll(): Promise<GetAllResponse> {
 		const result = await UserRepository.getAll()
@@ -27,6 +27,7 @@ export default class UserController {
 	}
 
 	@Get('/{entityId}')
+	@Security('bearerAuth')
 	@Response<NotFoundError>(StatusCodes.NOT_FOUND, 'Not found')
 	async getById(@Path() entityId: string): Promise<GetResponse> {
 		const result = await UserRepository.getById(entityId)
@@ -39,6 +40,7 @@ export default class UserController {
 	}
 
 	@Post('/search')
+	@Security('bearerAuth')
 	@Response<NotFoundError>(StatusCodes.NOT_FOUND, 'Not found')
 	async getByEmail(@Body() { email }: SearchRequest): Promise<GetResponse> {
 		const result = await UserRepository.getByEmail(email)
@@ -53,9 +55,9 @@ export default class UserController {
 	@Post('/register')
 	@SuccessResponse(StatusCodes.CREATED, 'Created')
 	@Response<UnprocessableEntityError>(StatusCodes.UNPROCESSABLE_ENTITY)
-	async register(@Body() body: RegisterUser): Promise<void> {
+	async register(@Body() body: RegisterUserRequest): Promise<void> {
 		// TODO: move to middleware
-		const { email, password } = RegisterUser.fromBody(body)
+		const { email, password } = RegisterUserRequest.fromBody(body)
 		const user = await UserRepository.getByEmail(email)
 
 		this.validateEmailNotTaken(email, user)
@@ -67,6 +69,7 @@ export default class UserController {
 	}
 
 	@Patch('/{entityId}/change-password')
+	@Security('bearerAuth')
 	@SuccessResponse(StatusCodes.OK)
 	@Response<UnprocessableEntityError>(StatusCodes.NOT_FOUND)
 	@Response<UnprocessableEntityError>(StatusCodes.UNPROCESSABLE_ENTITY)
@@ -92,15 +95,16 @@ export default class UserController {
 	}
 
 	@Patch('/{entityId}/change-email')
+	@Security('bearerAuth')
 	@SuccessResponse(StatusCodes.OK)
 	@Response<UnprocessableEntityError>(StatusCodes.NOT_FOUND)
 	@Response<UnprocessableEntityError>(StatusCodes.UNPROCESSABLE_ENTITY)
 	async changeEmail(
 		@Path() entityId: string,
-		@Body() body: ChangeEmail
+		@Body() body: ChangeEmailRequest
 	): Promise<void> {
 		// TODO: move to middleware
-		const { newEmail } = ChangeEmail.fromBody(body)
+		const { newEmail } = ChangeEmailRequest.fromBody(body)
 		const user = await UserRepository.getById(entityId)
 
 		this.validateUserExist(user)
@@ -116,15 +120,16 @@ export default class UserController {
 	}
 
 	@Put('/{entityId}/profile')
+	@Security('bearerAuth')
 	@SuccessResponse(StatusCodes.OK)
 	@Response<UnprocessableEntityError>(StatusCodes.NOT_FOUND)
 	@Response<UnprocessableEntityError>(StatusCodes.UNPROCESSABLE_ENTITY)
 	async editProfile(
 		@Path() entityId: string,
-		@Body() body: EditProfile
+		@Body() body: EditProfileRequest
 	): Promise<void> {
 		// TODO: move to middleware
-		const profile = EditProfile.fromBody(body)
+		const profile = EditProfileRequest.fromBody(body)
 		const user = await UserRepository.getById(entityId)
 		const currentProfile = user?.profile || {}
 

@@ -4,7 +4,15 @@
 	"spec": {
 		"outputDirectory": "public",
 		"specVersion": 3,
-		"basePath": "/api/v1"
+		"basePath": "/api/v1",
+		"securityDefinitions": {
+			"bearerAuth": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT",
+				"name": "Authorization"
+			}
+		}
 	},
 	"routes": {
 		"routesDir": "src"

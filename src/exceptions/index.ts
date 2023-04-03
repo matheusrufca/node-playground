@@ -7,6 +7,7 @@ type ErrorName =
 	| 'NOT_FOUND'
 	| 'INTERNAL_SERVER_ERROR'
 	| 'UNAUTHORIZED'
+	| 'FORBIDDEN'
 
 type HttpBaseErrorConstructor<T extends ErrorName> = {
 	name: T,
@@ -80,6 +81,18 @@ export class UnauthorizedError extends HttpBaseError<'UNAUTHORIZED'> {
 	}
 }
 
+export class ForbiddenError extends HttpBaseError<'FORBIDDEN'> {
+	constructor(message: string, description?: string, cause?: any) {
+		super({
+			name: 'FORBIDDEN',
+			message,
+			description,
+			cause,
+			code: StatusCodes.FORBIDDEN,
+		})
+	}
+}
+
 export class InternalServerError extends HttpBaseError<'INTERNAL_SERVER_ERROR'> {
 	constructor(error: Error, message: string, description?: string, cause?: any) {
 		super({
@@ -96,6 +109,7 @@ export const ErrorService = {
 	createBadRequestError: (message: string, description?: string, cause?: any): BadRequestError => new BadRequestError(message, description, cause),
 	createUnprocessableEntityError: (message: string, description?: string, cause?: any): UnprocessableEntityError => new UnprocessableEntityError(message, description, cause),
 	createUnauthorizedError: (message: string, description?: string, cause?: any): UnauthorizedError => new UnauthorizedError(message, description, cause),
+	createForbiddenError: (message: string, description?: string, cause?: any): ForbiddenError => new ForbiddenError(message, description, cause),
 	createNotFoundError: (message: string, description?: string): NotFoundError => new NotFoundError(message, description),
 	createInternalServerError: (error: Error, message: string, description?: string, cause?: any): InternalServerError => new InternalServerError(error, message, description, cause),
 }

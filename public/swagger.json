@@ -6,6 +6,66 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"AuthTokenResponse": {
+				"properties": {
+					"accessToken": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"accessToken"
+				],
+				"type": "object"
+			},
+			"UnauthorizedError": {
+				"properties": {
+					"name": {
+						"type": "string",
+						"enum": [
+							"UNAUTHORIZED"
+						],
+						"nullable": false
+					},
+					"message": {
+						"type": "string"
+					},
+					"stack": {
+						"type": "string"
+					},
+					"cause": {},
+					"description": {
+						"type": "string"
+					},
+					"code": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"message",
+					"cause",
+					"code"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"AuthTokenRequest": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email",
+					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Profile": {
 				"properties": {
 					"postalCode": {
@@ -162,7 +222,8 @@
 				"required": [
 					"email"
 				],
-				"type": "object"
+				"type": "object",
+				"additionalProperties": false
 			},
 			"UnprocessableEntityError": {
 				"properties": {
@@ -197,7 +258,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"RegisterUser": {
+			"RegisterUserRequest": {
 				"properties": {
 					"email": {
 						"type": "string"
@@ -229,7 +290,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"ChangeEmail": {
+			"ChangeEmailRequest": {
 				"properties": {
 					"newEmail": {
 						"type": "string"
@@ -241,7 +302,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"EditProfile": {
+			"EditProfileRequest": {
 				"properties": {
 					"name": {
 						"type": "string"
@@ -269,7 +330,14 @@
 				"additionalProperties": false
 			}
 		},
-		"securitySchemes": {}
+		"securitySchemes": {
+			"bearerAuth": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT",
+				"name": "Authorization"
+			}
+		}
 	},
 	"info": {
 		"title": "playground",
@@ -281,6 +349,45 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
+		"/auth/token": {
+			"post": {
+				"operationId": "Authenticate",
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AuthTokenResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UnauthorizedError"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AuthTokenRequest"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/users": {
 			"get": {
 				"operationId": "GetAll",
@@ -325,7 +432,11 @@
 						}
 					}
 				},
-				"security": [],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -363,7 +474,11 @@
 						}
 					}
 				},
-				"security": [],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -402,7 +517,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/RegisterUser"
+								"$ref": "#/components/schemas/RegisterUserRequest"
 							}
 						}
 					}
@@ -437,7 +552,11 @@
 						}
 					}
 				},
-				"security": [],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -488,7 +607,11 @@
 						}
 					}
 				},
-				"security": [],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -504,7 +627,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/ChangeEmail"
+								"$ref": "#/components/schemas/ChangeEmailRequest"
 							}
 						}
 					}
@@ -539,7 +662,11 @@
 						}
 					}
 				},
-				"security": [],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -555,7 +682,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/EditProfile"
+								"$ref": "#/components/schemas/EditProfileRequest"
 							}
 						}
 					}

@@ -2,7 +2,7 @@ import { User } from '@prisma/client';
 import { Expose, Transform, plainToInstance } from 'class-transformer';
 import { IsDefined, IsEmail, IsPostalCode } from 'class-validator';
 import { BaseResponse } from '../types';
-import { hashPassword } from './../../utils/hash';
+import { hashPassword } from '../../utils/auth';
 
 export type Params = Record<string, string>
 
@@ -15,7 +15,7 @@ export class AuthTokenRequest {
 
 	@IsDefined()
 	@Expose()
-	@Transform(({ value }) => hashPassword(value))
+	// @Transform(({ value }) => hashPassword(value))
 	readonly password!: string
 
 	static fromBody(body: AuthTokenRequest): AuthTokenRequest {

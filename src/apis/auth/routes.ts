@@ -5,7 +5,7 @@ import { AuthTokenRequest, AuthTokenResponse } from './models'
 
 const router: Router = express.Router({ strict: true })
 
-router.post("/auth-token", async (req: Request<{}, AuthTokenResponse, AuthTokenRequest>, res, next) => {
+router.post("/token", async (req: Request<{}, AuthTokenResponse, AuthTokenRequest>, res, next) => {
 	try {
 		const controller = new AuthController()
 		const response = await controller.authenticate(req.body)
@@ -14,3 +14,5 @@ router.post("/auth-token", async (req: Request<{}, AuthTokenResponse, AuthTokenR
 		next(error)
 	}
 })
+
+export default router

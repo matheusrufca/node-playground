@@ -1,9 +1,9 @@
 import { StatusCodes } from 'http-status-codes'
-import { Body, Get, Patch, Path, Post, Put, Response, Route, SuccessResponse } from 'tsoa'
+import { Body, Get, Patch, Path, Post, Put, Response, Route, Security, SuccessResponse } from 'tsoa'
 
 import { ErrorService, NotFoundError, UnprocessableEntityError } from '../../exceptions'
 import { UserRepository } from '../../repositories'
-import { comparePassword } from '../../utils/hash'
+import { comparePassword } from '../../utils/auth'
 import {
 	ChangeEmailRequest,
 	ChangePassword,
@@ -27,6 +27,7 @@ export class UserController {
 	}
 
 	@Get('/{entityId}')
+	@Security('bearerAuth')
 	@Response<NotFoundError>(StatusCodes.NOT_FOUND, 'Not found')
 	async getById(@Path() entityId: string): Promise<GetResponse> {
 		const result = await UserRepository.getById(entityId)
@@ -67,6 +68,7 @@ export class UserController {
 	}
 
 	@Patch('/{entityId}/change-password')
+	@Security('bearerAuth')
 	@SuccessResponse(StatusCodes.OK)
 	@Response<UnprocessableEntityError>(StatusCodes.NOT_FOUND)
 	@Response<UnprocessableEntityError>(StatusCodes.UNPROCESSABLE_ENTITY)
@@ -92,6 +94,7 @@ export class UserController {
 	}
 
 	@Patch('/{entityId}/change-email')
+	@Security('bearerAuth')
 	@SuccessResponse(StatusCodes.OK)
 	@Response<UnprocessableEntityError>(StatusCodes.NOT_FOUND)
 	@Response<UnprocessableEntityError>(StatusCodes.UNPROCESSABLE_ENTITY)
@@ -116,6 +119,7 @@ export class UserController {
 	}
 
 	@Put('/{entityId}/profile')
+	@Security('bearerAuth')
 	@SuccessResponse(StatusCodes.OK)
 	@Response<UnprocessableEntityError>(StatusCodes.NOT_FOUND)
 	@Response<UnprocessableEntityError>(StatusCodes.UNPROCESSABLE_ENTITY)

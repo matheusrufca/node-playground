@@ -4,13 +4,13 @@ import { Body, Post, Response, Route, SuccessResponse } from 'tsoa'
 
 import { ErrorService, UnauthorizedError } from '../../exceptions'
 import { UserRepository } from '../../repositories'
-import { comparePassword } from '../../utils/hash'
+import { comparePassword } from '../../utils/auth'
 import { AuthTokenRequest, AuthTokenResponse, UserDTO } from './models'
 
 @Route('auth')
 export class AuthController {
 
-	@Post('/auth-token')
+	@Post('/token')
 	@SuccessResponse(StatusCodes.OK)
 	@Response<UnauthorizedError>(StatusCodes.UNAUTHORIZED)
 	async authenticate(@Body() body: AuthTokenRequest): Promise<AuthTokenResponse> {
@@ -26,7 +26,8 @@ export class AuthController {
 	}
 
 	private generateAccessToken(user: UserDTO): string {
-		return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1y' })
+		const tokenSecret = process.env.ACCESS_TOKEN_SECRET || ''
+		return jwt.sign(user, tokenSecret, { expiresIn: '1y', })
 	}
 
 	private validateUserExist(user?: UserDTO | null): void {

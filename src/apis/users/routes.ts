@@ -1,5 +1,6 @@
 import express, { Request, Response, Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
+import isAuthenticatedHandler from '../../config/api-auth'
 
 import { validationHandler } from './../../config/api-validation'
 import { UserController } from './controller'
@@ -19,7 +20,7 @@ router.get('/', async (req, res, next) => {
 })
 
 
-router.get('/:entityId', async (req: Request<Params, GetResponse>, res, next) => {
+router.get('/:entityId', isAuthenticatedHandler, async (req: Request<Params, GetResponse>, res, next) => {
 	try {
 		const { entityId } = req.params
 		const controller = new UserController()
@@ -55,7 +56,7 @@ router.post('/register', validationHandler(RegisterUserRequest), async (req: Req
 	}
 })
 
-router.patch('/:entityId/change-password', validationHandler(ChangePassword), async (req: Request<Params, void, ChangePassword>, res: Response, next) => {
+router.patch('/:entityId/change-password', isAuthenticatedHandler, validationHandler(ChangePassword), async (req: Request<Params, void, ChangePassword>, res: Response, next) => {
 	try {
 		const { entityId } = req.params
 		const controller = new UserController()
@@ -68,7 +69,7 @@ router.patch('/:entityId/change-password', validationHandler(ChangePassword), as
 })
 
 
-router.patch('/:entityId/change-email', validationHandler(ChangeEmailRequest), async (req: Request<Params, void, ChangeEmailRequest>, res: Response, next) => {
+router.patch('/:entityId/change-email', isAuthenticatedHandler, validationHandler(ChangeEmailRequest), async (req: Request<Params, void, ChangeEmailRequest>, res: Response, next) => {
 	try {
 		const { entityId } = req.params
 		const controller = new UserController()
@@ -80,7 +81,7 @@ router.patch('/:entityId/change-email', validationHandler(ChangeEmailRequest), a
 	}
 })
 
-router.put('/:entityId/profile', validationHandler(EditProfileRequest), async (req: Request<Params, void, EditProfileRequest>, res: Response, next) => {
+router.put('/:entityId/profile', isAuthenticatedHandler, validationHandler(EditProfileRequest), async (req: Request<Params, void, EditProfileRequest>, res: Response, next) => {
 	try {
 		const { entityId } = req.params
 		const controller = new UserController()

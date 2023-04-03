@@ -1,15 +1,25 @@
 import { compareSync, genSaltSync, hashSync } from 'bcrypt'
-import { JwtPayload, verify as verifyToken } from 'jsonwebtoken'
+import { JwtPayload, sign, verify as verifyToken } from 'jsonwebtoken'
 
 import { ErrorService } from './../exceptions/index'
 
-type TokenResult = string | JwtPayload | undefined
+type UserIdentity = {
+	id: string
+	email: string
+}
+
+export type TokenResult = JwtPayload & UserIdentity
 
 export const hashPassword = (password: string): string =>
 	hashSync(password, genSaltSync(8))
 
-export const comparePassword = (password: string, storedHash: string) =>
+export const comparePassword = (password: string, storedHash: string): boolean =>
 	compareSync(password, storedHash)
+
+export const generateAccessToken = (user: UserIdentity) => {
+	const tokenSecret = process.env.ACCESS_TOKEN_SECRET || ''
+	return sign({ id: user.id, email: user.email }, tokenSecret, { expiresIn: '1y', })
+}
 
 export const validateToken = (token: string): Promise<TokenResult> => {
 	return new Promise((resolve, reject) => {
@@ -22,7 +32,14 @@ export const validateToken = (token: string): Promise<TokenResult> => {
 						error
 					))
 			}
-			resolve(user)
+			resolve(user as TokenResult)
 		})
 	})
+}
+
+export const validateUserIdentity = async (token: string, userId: string) => {
+	const user = await validateToken(token)
+
+	if (user.id !== userId)
+		throw ErrorService.createForbiddenError('User not allowed to make this operation')
 }

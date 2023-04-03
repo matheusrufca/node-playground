@@ -4,7 +4,7 @@ import { Body, Post, Response, Route, SuccessResponse } from 'tsoa'
 
 import { ErrorService, UnauthorizedError } from '../../exceptions'
 import { UserRepository } from '../../repositories'
-import { comparePassword } from '../../utils/auth'
+import { comparePassword, generateAccessToken } from '../../utils/auth'
 import { AuthTokenRequest, AuthTokenResponse, UserDTO } from './models'
 
 @Route('auth')
@@ -20,14 +20,9 @@ export class AuthController {
 		this.validateUserExist(user)
 		this.validateCurrentPassword(password, user?.password || '')
 
-		const accessToken = this.generateAccessToken(user!)
+		const accessToken = generateAccessToken(user!)
 
 		return { accessToken }
-	}
-
-	private generateAccessToken(user: UserDTO): string {
-		const tokenSecret = process.env.ACCESS_TOKEN_SECRET || ''
-		return jwt.sign(user, tokenSecret, { expiresIn: '1y', })
 	}
 
 	private validateUserExist(user?: UserDTO | null): void {

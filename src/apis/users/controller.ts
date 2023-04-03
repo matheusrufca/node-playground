@@ -40,6 +40,7 @@ export class UserController {
 	}
 
 	@Post('/search')
+	@Security('bearerAuth')
 	@Response<NotFoundError>(StatusCodes.NOT_FOUND, 'Not found')
 	async getByEmail(@Body() { email }: SearchRequest): Promise<GetResponse> {
 		const result = await UserRepository.getByEmail(email)

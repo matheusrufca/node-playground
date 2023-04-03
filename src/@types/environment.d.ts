@@ -11,11 +11,5 @@ declare global {
 			DATABASE_URL: string
 		}
 	}
-	namespace Express {
-		export interface Request {
-			language?: Language;
-			user?: string | JwtPayload;
-		}
-	}
 }
 export { }

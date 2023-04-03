@@ -1,18 +1,16 @@
 import { NextFunction, Request, Response } from 'express';
 import { ErrorService } from '../exceptions';
-import { validateToken } from './../utils/auth';
+import { validateToken, validateUserIdentity } from './../utils/auth';
 
 
 export const isAuthenticatedHandler = async (req: Request, res: Response, next: NextFunction) => {
 	const authHeader = req.headers.authorization || ''
 	const [, token] = authHeader.split(' ')
 
-	console.debug('req', JSON.stringify(req.headers.authorization))
-
 	if (token) {
 		try {
 			const user = await validateToken(token)
-			// req['user'] = user
+			req.user = user
 			next()
 		} catch (error) {
 			next(error)
@@ -20,6 +18,19 @@ export const isAuthenticatedHandler = async (req: Request, res: Response, next: 
 	} else {
 		next(ErrorService.createUnauthorizedError('Token not present'))
 	}
+}
+
+export const validateUserIdentityHandler = (req: Request, res: Response, next: NextFunction) => {
+	if (!req.user)
+		throw ErrorService.createUnauthorizedError('User not authenticated')
+
+	const { entityId } = req.params
+	const authHeader = req.headers.authorization || ''
+	const [, token] = authHeader.split(' ')
+
+	validateUserIdentity(token, entityId)
+		.then(next)
+		.catch(next)
 }
 
 export default isAuthenticatedHandler

@@ -4,7 +4,7 @@ import isAuthenticatedHandler, { validateUserIdentityHandler } from '../../confi
 
 import { validationHandler } from './../../config/api-validation'
 import { UserController } from './controller'
-import { ChangeEmailRequest, ChangePassword, EditProfileRequest, GetResponse, Params, RegisterUserRequest, SearchRequest } from './models'
+import { ChangeEmailRequest, ChangePasswordRequest, EditProfileRequest, GetUserResponse, Params, RegisterUserRequest, SearchRequest } from './models'
 
 const router: Router = express.Router({ strict: true })
 
@@ -24,7 +24,7 @@ router.get(
 	'/:entityId',
 	isAuthenticatedHandler,
 	validateUserIdentityHandler,
-	async (req: Request<Params, GetResponse>, res: Response, next) => {
+	async (req: Request<Params, GetUserResponse>, res: Response, next) => {
 		try {
 			const { entityId } = req.params
 			const controller = new UserController()
@@ -40,7 +40,7 @@ router.get(
 router.post(
 	'/search',
 	isAuthenticatedHandler,
-	async (req: Request<{}, GetResponse, SearchRequest>, res: Response, next) => {
+	async (req: Request<{}, GetUserResponse, SearchRequest>, res: Response, next) => {
 		try {
 			const { email } = req.body
 			const controller = new UserController()
@@ -72,9 +72,9 @@ router.post(
 router.patch(
 	'/:entityId/change-password',
 	isAuthenticatedHandler,
-	validationHandler(ChangePassword),
+	validationHandler(ChangePasswordRequest),
 	validateUserIdentityHandler,
-	async (req: Request<Params, void, ChangePassword>, res: Response, next) => {
+	async (req: Request<Params, void, ChangePasswordRequest>, res: Response, next) => {
 		try {
 			const { entityId } = req.params
 			const controller = new UserController()

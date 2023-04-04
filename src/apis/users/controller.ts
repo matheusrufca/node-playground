@@ -6,10 +6,10 @@ import { UserRepository } from '../../repositories'
 import { comparePassword } from '../../utils/security'
 import {
 	ChangeEmailRequest,
-	ChangePassword,
+	ChangePasswordRequest,
 	EditProfileRequest,
-	GetAllResponse,
-	GetResponse,
+	GetAllUsersResponse,
+	GetUserResponse,
 	RegisterUserRequest,
 	SearchRequest,
 	UserDTO
@@ -19,7 +19,7 @@ import {
 @Route('users')
 export class UserController {
 	@Get('/')
-	async getAll(): Promise<GetAllResponse> {
+	async getAll(): Promise<GetAllUsersResponse> {
 		const result = await UserRepository.getAll()
 		return {
 			content: result
@@ -29,7 +29,7 @@ export class UserController {
 	@Get('/{entityId}')
 	@Security('bearerAuth')
 	@Response<NotFoundError>(StatusCodes.NOT_FOUND, 'Not found')
-	async getById(@Path() entityId: string): Promise<GetResponse> {
+	async getById(@Path() entityId: string): Promise<GetUserResponse> {
 		const result = await UserRepository.getById(entityId)
 
 		if (!result) throw ErrorService.createNotFoundError('User not found')
@@ -42,7 +42,7 @@ export class UserController {
 	@Post('/search')
 	@Security('bearerAuth')
 	@Response<NotFoundError>(StatusCodes.NOT_FOUND, 'Not found')
-	async getByEmail(@Body() { email }: SearchRequest): Promise<GetResponse> {
+	async getByEmail(@Body() { email }: SearchRequest): Promise<GetUserResponse> {
 		const result = await UserRepository.getByEmail(email)
 
 		if (!result) throw ErrorService.createNotFoundError('User not found')
@@ -75,10 +75,10 @@ export class UserController {
 	@Response<UnprocessableEntityError>(StatusCodes.UNPROCESSABLE_ENTITY)
 	async changePassword(
 		@Path() entityId: string,
-		@Body() body: ChangePassword
+		@Body() body: ChangePasswordRequest
 	): Promise<void> {
 		// TODO: move to middleware
-		const { currentPassword, newPassword } = ChangePassword.fromBody(body)
+		const { currentPassword, newPassword } = ChangePasswordRequest.fromBody(body)
 		const user = await UserRepository.getById(entityId)
 
 		this.validateUserExist(user)

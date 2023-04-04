@@ -1,8 +1,8 @@
 import { User } from '@prisma/client';
-import { Expose, Transform, plainToInstance } from 'class-transformer';
+import { Expose, plainToInstance, Transform } from 'class-transformer';
 import { IsDefined, IsEmail, IsPostalCode } from 'class-validator';
-import { BaseResponse } from '../types';
 import { hashPassword } from '../../utils/security';
+import { BaseResponse } from '../types';
 
 export type Params = {
 	entityId: string,
@@ -11,8 +11,8 @@ export type Params = {
 
 export type UserDTO = User
 
-export type GetAllResponse = BaseResponse<User[]>
-export type GetResponse = BaseResponse<User>
+export type GetAllUsersResponse = BaseResponse<User[]>
+export type GetUserResponse = BaseResponse<User>
 
 export class SearchRequest {
 	@IsDefined()
@@ -39,7 +39,7 @@ export class RegisterUserRequest {
 	}
 }
 
-export class ChangePassword {
+export class ChangePasswordRequest {
 	@IsDefined()
 	@Expose()
 	// @Transform(({ value }) => hashPassword(value))
@@ -51,8 +51,8 @@ export class ChangePassword {
 	readonly newPassword!: string
 
 	// TODO: move to middleware
-	static fromBody(body: ChangePassword): ChangePassword {
-		return plainToInstance(ChangePassword, body)
+	static fromBody(body: ChangePasswordRequest): ChangePasswordRequest {
+		return plainToInstance(ChangePasswordRequest, body)
 	}
 }
 

@@ -163,7 +163,7 @@
 				],
 				"type": "object"
 			},
-			"GetAllResponse": {
+			"GetAllUsersResponse": {
 				"$ref": "#/components/schemas/BaseResponse_User-Array_"
 			},
 			"BaseResponse_User_": {
@@ -177,7 +177,7 @@
 				],
 				"type": "object"
 			},
-			"GetResponse": {
+			"GetUserResponse": {
 				"$ref": "#/components/schemas/BaseResponse_User_"
 			},
 			"NotFoundError": {
@@ -274,7 +274,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"ChangePassword": {
+			"ChangePasswordRequest": {
 				"properties": {
 					"currentPassword": {
 						"type": "string"
@@ -340,8 +340,9 @@
 		}
 	},
 	"info": {
-		"title": "playground",
+		"title": "nodejs-playground",
 		"version": "1.0.0",
+		"description": "A nodejs application with Express, Mongo, Prisma and Swagger",
 		"license": {
 			"name": "ISC"
 		},
@@ -397,7 +398,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GetAllResponse"
+									"$ref": "#/components/schemas/GetAllUsersResponse"
 								}
 							}
 						}
@@ -416,7 +417,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GetResponse"
+									"$ref": "#/components/schemas/GetUserResponse"
 								}
 							}
 						}
@@ -458,7 +459,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GetResponse"
+									"$ref": "#/components/schemas/GetUserResponse"
 								}
 							}
 						}
@@ -572,7 +573,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/ChangePassword"
+								"$ref": "#/components/schemas/ChangePasswordRequest"
 							}
 						}
 					}

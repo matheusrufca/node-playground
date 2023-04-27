@@ -28,14 +28,49 @@ model User {
 
 // Address is an embedded document
 type Profile {
-  name    		String?
-  bio     		String?
-  website 		String?
-  city    		String?
-  state   		String?
-  country 		String?
-  postalCode  String?
+  name       String?
+  bio        String?
+  website    String?
+  city       String?
+  state      String?
+  country    String?
+  postalCode String?
 }
 
-// prima generate
-// prisma db push
+model Menu {
+  databaseId String         @id @default(auto()) @map("_id") @db.ObjectId 
+  id         Int            @unique //: 883600386,
+  menuItem   MenuItemDetail
+  menuDetail MenuDetail
+  section    MenuSection
+
+  photo            String? // : "http://a.mktgcdn.com/p/6i8orK1zi_SeiEObIgB-3pT6vBgQ5FEcysQXQldpjAw/772x1026.jpg",
+  url              String? //"",
+  featuredMenuItem String? //     : ""
+}
+
+type MenuDetail {
+  internalName  String //   : "002 - Demo Account Jamie's Lunch Menu",
+  language      String //: "en",
+  currency      String // : "USD",
+  publishedName String? //       : "002 - Demo Account Jamie's Lunch Menu",
+  listId        Int? //: 773066,
+}
+
+type MenuItemDetail {
+  name        String // : "Monday",
+  price       Float? //: "$9.00",
+  calories    String? //: "",
+  options     String[] // : "Substitue Garlic Parm Fries|$4.00",
+  description String? //         : "cheddar cheese, lettuce, tomatoes, onions & mayo",
+  allergens   String? // : "",
+}
+
+type MenuSection {
+  id          Int? // : 76401709,
+  name        String //: "Coffee",
+  description String? //        : "",
+}
+
+// npx prisma generate
+// npx prisma db push

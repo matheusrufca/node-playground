@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { handlePrismaError } from '../config/prisma-error-handler'
 
 const getDatabaseConnection = async (): Promise<PrismaClient> => {
 	try {
@@ -11,4 +12,28 @@ const getDatabaseConnection = async (): Promise<PrismaClient> => {
 }
 
 
-export { getDatabaseConnection }
+type DbOperation<T extends {}> = (database: PrismaClient) => T
+type DbOperationResult<T extends {}> = ReturnType<DbOperation<T>>
+
+const makeOperation = async <T extends {}>(operation: DbOperation<T>): Promise<DbOperationResult<T>> => {
+	let database: PrismaClient | undefined
+	try {
+		database = await getDatabaseConnection()
+		return await operation(database)
+	} catch (error) {
+
+		console.error(error)
+
+		throw handlePrismaError(error)
+	}
+	finally {
+		await database?.$disconnect()
+	}
+}
+
+
+export {
+	getDatabaseConnection,
+	makeOperation,
+}
+

@@ -1,52 +1,23 @@
-import { Prisma, PrismaClient, User } from '@prisma/client'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
-import { handlePrismaError } from '../config/prisma-error-handler'
-import { getDatabaseConnection } from '../database'
+import { Prisma, User } from '@prisma/client'
+import { runTransaction } from '../database'
 import { now } from '../utils/date'
 
 
 
 export const create = async (data: Prisma.UserCreateInput) => {
-	let database: PrismaClient | undefined
-	try {
-		database = await getDatabaseConnection()
-		return await database.user.create({
-			data,
-		})
-	} catch (error) {
-		throw handlePrismaError(error)
-	}
-	finally {
-		await database?.$disconnect()
-	}
+	return await runTransaction(async (database) =>
+		await database.user.create({ data, }))
 }
 
 export const getAll = async (options?: Prisma.UserFindManyArgs): Promise<User[]> => {
-	let database: PrismaClient | undefined
-	try {
-		database = await getDatabaseConnection()
-		const data = await database.user.findMany(options)
-		return data
-	} catch (error) {
-		throw handlePrismaError(error)
-	}
-	finally {
-		await database?.$disconnect()
-	}
+	return await runTransaction(async (database) =>
+		await database.user.findMany(options))
 }
 
-export const get = async (options: Prisma.UserFindUniqueArgs): Promise<User | null> => {
-	let database: PrismaClient | undefined
-	try {
-		database = await getDatabaseConnection()
-		const data = await database.user.findUnique(options)
-		return data
-	} catch (error) {
-		throw handlePrismaError(error)
-	}
-	finally {
-		await database?.$disconnect()
-	}
+export const get = async (options: Prisma.UserFindUniqueArgs) => {
+	return await runTransaction(async (database) =>
+		await database.user.findUnique(options)
+	)
 }
 
 export const getByEmail = async (email: string, options?: Prisma.UserFindUniqueArgs): Promise<User | null> => {
@@ -71,24 +42,15 @@ export const getById = async (id: string, options?: Prisma.UserFindUniqueArgs): 
 
 
 export const update = async (data: Prisma.UserUpdateArgs) => {
-
-	let database: PrismaClient | undefined
-	try {
-		database = await getDatabaseConnection()
-
-		return await database.user.update({
+	return await runTransaction(async (database) =>
+		await database.user.update({
 			...data,
 			data: {
 				...data.data,
 				updatedAt: now(),
 			},
 		})
-	} catch (error) {
-		throw handlePrismaError(error)
-	}
-	finally {
-		await database?.$disconnect()
-	}
+	)
 }
 
 export const updateWithId = async (id: string, data: Omit<Prisma.UserUpdateArgs, 'where'>) => {
@@ -101,11 +63,8 @@ export const updateWithId = async (id: string, data: Omit<Prisma.UserUpdateArgs,
 }
 
 
-export const upsert = async ( data: Prisma.UserUpsertArgs) => {
-	let database: PrismaClient | undefined
-	try {
-		database = await getDatabaseConnection()
-
+export const upsert = async (data: Prisma.UserUpsertArgs) => {
+	return await runTransaction(async (database) => {
 		const model: Prisma.UserUpsertArgs = {
 			...data,
 			update: {
@@ -114,12 +73,8 @@ export const upsert = async ( data: Prisma.UserUpsertArgs) => {
 			},
 		}
 		return await database.user.upsert(model)
-	} catch (error) {
-		throw handlePrismaError(error)
 	}
-	finally {
-		await database?.$disconnect()
-	}
+	)
 }
 
 export const upsertWithId = async (id: string, data: Omit<Prisma.UserUpsertArgs, 'where'>) => {
@@ -135,16 +90,9 @@ export const upsertWithId = async (id: string, data: Omit<Prisma.UserUpsertArgs,
 
 
 export const remove = async (data: Prisma.UserDeleteArgs) => {
-	let database: PrismaClient | undefined
-	try {
-		database = await getDatabaseConnection()
-		return await database.user.delete(data)
-	} catch (error) {
-		throw handlePrismaError(error)
-	}
-	finally {
-		await database?.$disconnect()
-	}
+	return await runTransaction(async (database) =>
+		await database.user.delete(data)
+	)
 }
 
 export const removeByEmail = async (email: string, options?: Prisma.UserDeleteArgs) => {

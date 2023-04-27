@@ -1,39 +1,23 @@
 import { PrismaClient } from '@prisma/client'
 import { handlePrismaError } from '../config/prisma-error-handler'
 
-const getDatabaseConnection = async (): Promise<PrismaClient> => {
+type DbTransactionFn<TResult> = (database: PrismaClient) => Promise<TResult>
+
+const getDatabaseClient = (): PrismaClient => new PrismaClient()
+
+const runTransaction = async <TResult>(transactionFn: DbTransactionFn<TResult>): ReturnType<DbTransactionFn<TResult>> => {
 	try {
-		const prisma = new PrismaClient()
-		await prisma.$connect()
-		return prisma
-	} catch (error) {
-		throw error
+		const database = getDatabaseClient()
+		return await transactionFn(database)
 	}
-}
-
-
-type DbOperation<T extends {}> = (database: PrismaClient) => T
-type DbOperationResult<T extends {}> = ReturnType<DbOperation<T>>
-
-const makeOperation = async <T extends {}>(operation: DbOperation<T>): Promise<DbOperationResult<T>> => {
-	let database: PrismaClient | undefined
-	try {
-		database = await getDatabaseConnection()
-		return await operation(database)
-	} catch (error) {
-
-		console.error(error)
-
+	catch (error) {
 		throw handlePrismaError(error)
-	}
-	finally {
-		await database?.$disconnect()
 	}
 }
 
 
 export {
-	getDatabaseConnection,
-	makeOperation,
+	getDatabaseClient,
+	runTransaction,
 }
 

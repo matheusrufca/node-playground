@@ -1,20 +1,21 @@
-import express, { Router } from 'express'
-
-import { MenuController } from './controller'
-
-const router: Router = express.Router({ strict: true })
-
-
-router.get('/seed', async (req, res, next) => {
-	try {
-		const controller = new MenuController()
-		const response = await controller.seed()
-		res.json(response)
-	} catch (error) {
-		next(error)
-	}
-})
-
-export default router
-export { router }
-
+export type RawMenu = {
+	MenuInternalName: string
+	MenuLanguage: string
+	MenuCurrency: string
+	MenuPublishedName: string
+	MenuListId: number | ''
+	SectionName: string
+	SectionDescription: string
+	SectionId: number | ''
+	ItemId: number
+	ItemName: string
+	ItemPrice: string
+	ItemCalories: string
+	ItemOption: string
+	ItemOption__1: string
+	ItemDescription: string
+	Photo: string
+	Url: string
+	ItemAllergens: string
+	FeaturedMenuItem: string
+}

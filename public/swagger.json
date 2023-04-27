@@ -66,6 +66,19 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"Prisma.BatchPayload": {
+				"properties": {
+					"count": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"count"
+				],
+				"type": "object",
+				"description": "Batch Payload for updateMany & deleteMany & createMany"
+			},
 			"Profile": {
 				"properties": {
 					"postalCode": {
@@ -387,6 +400,25 @@
 						}
 					}
 				}
+			}
+		},
+		"/menus/seed": {
+			"get": {
+				"operationId": "Seed",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Prisma.BatchPayload"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
 			}
 		},
 		"/users": {

@@ -1,48 +1,49 @@
 import { Prisma } from '@prisma/client'
-import defaultTo from 'lodash/defaultTo'
 import { Get, Route } from 'tsoa'
 import MENU_ITEMS from '../../../data/menus.json'
 import { MenusRepository } from '../../repositories'
-import { RawMenu } from './routes'
+import { RawMenu } from './models'
 
-const convertMenuItem = (rawItem: RawMenu): Prisma.MenuCreateInput => {
 
-	const itemPrice = rawItem.ItemPrice ? parseFloat(rawItem.ItemPrice.substring(1)) : null
-	const itemOptions = [rawItem.ItemOption, rawItem.ItemOption__1].filter(Boolean)
-	const menuDetailListId: number | null = rawItem.MenuListId || null
-	const sectionId: number | null = rawItem.SectionId || null
+const parseCurrency = (value: string): number => parseFloat(value.substring(1))
+
+const convertMenuItem = (model: RawMenu): Prisma.MenuCreateInput => {
+
+	const itemPrice = model.ItemPrice ? parseCurrency(model.ItemPrice) : null
+	const itemOptions = [model.ItemOption, model.ItemOption__1].filter(Boolean)
+	const menuDetailListId: number | null = model.MenuListId || null
+	const sectionId: number | null = model.SectionId || null
 
 	return {
-		id: rawItem.ItemId,
-		photo: defaultTo(rawItem.Photo, null),
-		url: defaultTo(rawItem.Url, null),
-		featuredMenuItem: defaultTo(rawItem.FeaturedMenuItem, null),
+		id: model.ItemId,
+		photo: model.Photo || null,
+		url: model.Url || null,
+		featuredMenuItem: model.FeaturedMenuItem || null,
 		menuItem: {
-			name: rawItem.ItemName,
+			name: model.ItemName,
 			price: itemPrice,
-			calories: defaultTo(rawItem.ItemCalories, null),
+			calories: model.ItemCalories || null,
 			options: itemOptions,
-			description: defaultTo(rawItem.ItemDescription, null),
-			allergens: defaultTo(rawItem.ItemAllergens, null),
+			description: model.ItemDescription || null,
+			allergens: model.ItemAllergens || null,
 		},
 		menuDetail: {
-			internalName: rawItem.MenuInternalName,
-			language: rawItem.MenuLanguage,
-			currency: rawItem.MenuCurrency,
-			publishedName: defaultTo(rawItem.MenuPublishedName, null),
+			internalName: model.MenuInternalName,
+			language: model.MenuLanguage,
+			currency: model.MenuCurrency,
+			publishedName: model.MenuPublishedName || null,
 			listId: menuDetailListId,
 		},
 		section: {
 			id: sectionId,
-			name: rawItem.SectionName,
-			description: defaultTo(rawItem.SectionDescription, null),
+			name: model.SectionName,
+			description: model.SectionDescription || null,
 		}
 	}
 }
 
 const loadMenusFromJson = () =>
 	(MENU_ITEMS as RawMenu[]).map(convertMenuItem)
-
 
 @Route('menus')
 export class MenuController {

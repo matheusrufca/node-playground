@@ -13,8 +13,11 @@ router.get('/', async (req, res, next) => {
 	try {
 		const controller = new UserController()
 		const response = await controller.getAll()
+
+		console.debug('response', response)
 		res.json(response)
 	} catch (error) {
+		console.debug('error', error)
 		next(error)
 	}
 })
@@ -128,3 +131,4 @@ router.put(
 
 export default router
 export { router }
+

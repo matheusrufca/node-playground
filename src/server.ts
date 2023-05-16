@@ -1,5 +1,6 @@
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
 import express, { Application, NextFunction, Request, Response } from 'express'
 import createError from 'http-errors'
 import path from 'path'
@@ -22,6 +23,9 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors({
+	origin: '*'
+}));
 
 app.use(
 	[`${BASE_URL}/docs`, `${BASE_URL}/swagger`],

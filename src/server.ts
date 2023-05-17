@@ -10,9 +10,11 @@ import routes from './apis/routes'
 import { apiErrorHandler } from './config/api-error-handler'
 import logger from './config/logger'
 import { swaggerConfigHandler } from './config/swagger-config'
+import ChatServer from './websocket/chat-server'
 
 const BASE_URL = [process.env.API_BASE_PATH, process.env.API_VERSION].join('/')
-const PORT = process.env.PORT || 8000
+const API_PORT = process.env.PORT || 8000
+
 
 const app: Application = express()
 
@@ -27,6 +29,8 @@ app.use(cors({
 	origin: '*'
 }));
 
+
+
 app.use(
 	[`${BASE_URL}/docs`, `${BASE_URL}/swagger`],
 	swagger.serve,
@@ -37,13 +41,18 @@ app.use(BASE_URL, routes)
 
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
 	next(createError(createError.NotFound('Route not found')))
 })
 
 // error handler
 app.use(apiErrorHandler)
 
+
+app.use((req: Request, res: Response, next) => {
+	// handle websocket
+	// handleConnectionUpgrade(req, res)
+})
 
 
 app.use(function (error: Error, req: Request, res: Response, next: NextFunction) {
@@ -56,9 +65,14 @@ app.use(function (error: Error, req: Request, res: Response, next: NextFunction)
 	// res.render('error')
 })
 
-app.listen(PORT, () => {
-	console.log("Server is running on port", PORT)
-})
+
+app
+	.listen(API_PORT, () => {
+		console.log("HTTP server is running on port", API_PORT)
+		ChatServer.start()
+	})
+
+
 
 export default app
 export { app }

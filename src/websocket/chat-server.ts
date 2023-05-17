@@ -1,4 +1,5 @@
 import { WebSocket } from 'ws'
+import { deserializeBson } from '../utils/bson'
 import { uuid } from '../utils/uuid'
 import { WebSocketServerHandlers, createWebSocketServer } from './server'
 
@@ -30,6 +31,7 @@ const messageHistory = []
 
 const handlers: WebSocketServerHandlers = {
 	onConnection: (socket) => {
+		socket.binaryType = 'arraybuffer'
 		const clientId = connectionClients.addClient(socket)
 
 		socket.send(`Welcome. ${clientId}`)
@@ -44,9 +46,14 @@ const handlers: WebSocketServerHandlers = {
 	onError: (error) => {
 		console.error('websocket:error', error)
 	},
-	onMessage: (data) => {
-		console.debug('websocket:message %s', data)
-		messageHistory.push(data)
+	onMessage: (rawData) => {
+		console.debug('websocket:message %s', rawData)
+		try {
+			const data = deserializeBson(rawData)
+			messageHistory.push(data)
+		} catch (error) {
+			console.error('Unable to parse message', error)
+		}
 	}
 }
 

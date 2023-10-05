@@ -10,7 +10,7 @@ import routes from './apis/routes'
 import { apiErrorHandler } from './config/api-error-handler'
 import logger from './config/logger'
 import { swaggerConfigHandler } from './config/swagger-config'
-import ChatServer from './websocket/chat-server'
+import ChatServer from './websocket/chat-server/chat-server'
 
 const BASE_URL = [process.env.API_BASE_PATH, process.env.API_VERSION].join('/')
 const API_PORT = process.env.PORT || 8000

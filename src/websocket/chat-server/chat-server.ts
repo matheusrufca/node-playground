@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws'
-import { deserializeBson } from '../utils/bson'
-import { uuid } from '../utils/uuid'
-import { WebSocketServerHandlers, createWebSocketServer } from './server'
+import { deserializeBson, serializeBson } from '../../utils/bson'
+import { uuid } from '../../utils/uuid'
+import { WebSocketServerHandlers, createWebSocketServer } from '../server'
 
 
 class WebSocketsList {
@@ -34,7 +34,9 @@ const handlers: WebSocketServerHandlers = {
 		socket.binaryType = 'arraybuffer'
 		const clientId = connectionClients.addClient(socket)
 
-		socket.send(`Welcome. ${clientId}`)
+		// socket.send(`Welcome. ${clientId}`)
+
+		socket.send(serializeBson({ clientId }))
 
 		socket.on('close', (eventCode: number) => {
 			console.info('websocket:close', eventCode)
@@ -46,10 +48,11 @@ const handlers: WebSocketServerHandlers = {
 	onError: (error) => {
 		console.error('websocket:error', error)
 	},
-	onMessage: (rawData) => {
-		console.debug('websocket:message %s', rawData)
+	onMessage: (rawData, isBinary) => {
+		console.debug('websocket:message', rawData, rawData.toString(), isBinary)
 		try {
 			const data = deserializeBson(rawData)
+			console.debug('bson:deserialize', data)
 			messageHistory.push(data)
 		} catch (error) {
 			console.error('Unable to parse message', error)
@@ -62,6 +65,11 @@ class ChatServer {
 		createWebSocketServer({ path, }, handlers)
 	}
 }
+
+
+const handleIncomingChatMessages = () => { }
+
+
 
 export { ChatServer }
 export default ChatServer
